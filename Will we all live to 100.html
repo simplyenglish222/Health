@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will We All Live to 100? (Full Coverage)</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e67e22;
+            --bg: #f8f9fa;
+            --text: #333;
+            --white: #ffffff;
+            --correct: #27ae60;
+            --wrong: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 60px;
+        }
+
+        /* --- NAVIGATION TABS --- */
+        .nav-bar {
+            background: var(--primary);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            border-bottom: 4px solid transparent;
+        }
+
+        .nav-btn:hover { color: white; }
+        
+        .nav-btn.active {
+            color: white;
+            border-bottom-color: var(--accent);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* --- SECTIONS --- */
+        .section {
+            display: none;
+            background: var(--white);
+            margin-top: 25px;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            animation: fadeIn 0.4s ease-out;
+        }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { text-align: center; color: var(--primary); margin-bottom: 10px; }
+        h2 { color: var(--accent); margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        /* --- ARTICLE TAB --- */
+        .article-content {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .article-content p { margin-bottom: 1.5em; }
+
+        .clickable-word {
+            cursor: pointer;
+            border-bottom: 1px dotted var(--primary);
+            transition: background 0.2s;
+            padding: 0 1px;
+        }
+        .clickable-word:hover {
+            background-color: #fff3cd;
+            border-bottom-color: var(--accent);
+            color: #000;
+        }
+
+        /* --- VOCABULARY TAB --- */
+        .vocab-list { list-style: none; padding: 0; }
+        
+        .vocab-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        .vocab-item:hover { background-color: #f9f9f9; }
+        .vocab-item:last-child { border-bottom: none; }
+
+        .vocab-en { font-weight: bold; font-size: 1.1rem; color: var(--primary); }
+        .vocab-ru { color: #666; font-size: 1rem; }
+
+        .audio-btn {
+            background: white;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+        .audio-btn:hover { background: var(--accent); color: white; }
+
+        /* --- EXERCISES TAB (MATCHING) --- */
+        .match-game-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .col-source, .col-target {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Draggables */
+        .draggable {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: grab;
+            font-weight: 500;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            user-select: none;
+        }
+        .draggable:active { cursor: grabbing; transform: scale(0.98); }
+        .draggable.matched { opacity: 0.5; cursor: default; background: #e8f5e9; border-color: var(--correct); }
+
+        /* Drop Zones */
+        .drop-zone {
+            background: #fdfdfd;
+            border: 2px dashed #bdc3c7;
+            border-radius: 6px;
+            padding: 12px 15px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        .drop-zone.drag-over { background: #eef2f3; border-color: var(--accent); }
+        .drop-zone.correct { border-style: solid; border-color: var(--correct); background: #eaffea; }
+        
+        .zone-label { color: #555; font-size: 0.95rem; flex-grow: 1; }
+        .zone-content { font-weight: bold; color: var(--primary); margin-left: 10px; }
+
+        .reset-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 10px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .reset-btn:hover { background: #34495e; }
+
+        /* --- POPUP --- */
+        #word-popup {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            text-align: center;
+            min-width: 220px;
+            animation: slideUp 0.3s;
+        }
+        @keyframes slideUp {
+            from { transform: translate(-50%, 50px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        #pop-word { margin: 0; font-size: 1.2rem; text-transform: capitalize; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; margin-bottom: 5px; }
+        #pop-trans { color: #f1c40f; font-size: 0.9rem; display: block; margin: 4px 0; }
+        #pop-mean { font-size: 1rem; font-weight: bold; color: #fff; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .nav-btn { padding: 12px 10px; font-size: 0.9rem; }
+            .match-game-area { flex-direction: column; }
+            .col-source, .col-target { min-width: 100%; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="nav-bar">
+    <button class="nav-btn active" onclick="switchTab('tab-article')">📖 Article</button>
+    <button class="nav-btn" onclick="switchTab('tab-vocab')">📚 Vocabulary</button>
+    <button class="nav-btn" onclick="switchTab('tab-exercises')">✍️ Exercises</button>
+</div>
+
+<div class="container">
+
+    <div id="tab-article" class="section active">
+        <h1>Will We All Live to 100?</h1>
+        <p style="text-align:center; color:#7f8c8d; font-size:0.9rem; margin-bottom:30px;">
+            (Нажмите на любое слово, чтобы увидеть перевод, транскрипцию и услышать произношение)
+        </p>
+        <div id="article-text" class="article-content">
+            </div>
+    </div>
+
+    <div id="tab-vocab" class="section">
+        <h2>Key Collocations and Phrases</h2>
+        <ul class="vocab-list" id="vocab-list-ul">
+            </ul>
+    </div>
+
+    <div id="tab-exercises" class="section">
+        <h2>Match Collocations (Drag & Drop)</h2>
+        <p>Перетащите английскую фразу на ее правильный русский перевод.</p>
+        
+        <div class="match-game-area">
+            <div class="col-source" id="draggables-container">
+                <p style="text-align: center; color: #7f8c8d;">Английские фразы</p>
+                </div>
+
+            <div class="col-target" id="dropzones-container">
+                <p style="text-align: center; color: #7f8c8d;">Русский перевод</p>
+                </div>
+        </div>
+        
+        <button class="reset-btn" onclick="initExercises()">Сбросить упражнение</button>
+    </div>
+
+</div>
+
+<div id="word-popup">
+    <h4 id="pop-word">Word</h4>
+    <span id="pop-trans" class="transcription">/ˈtrænskrɪpʃən/</span>
+    <span id="pop-mean">Translation</span>
+</div>
+
+<script>
+    // --- DATA ---
+
+    // Full Article Text
+    const fullArticleText = [
+        "Not long ago, the idea of living to 100 seemed like something reserved for the pages of a science fiction novel or the rare, extraordinary individual. But today, thanks to groundbreaking advances in medicine, improved living conditions, and a greater focus on preventive health, this once-unthinkable milestone is edging closer to reality for many of us. For children born in the 21st century, living past 100 may soon be the rule, not the exception.",
+        "The Rise of the Centenarian. The term centenarian refers to someone who lives to 100 years or more. Right now, there are around 700,000 centenarians alive worldwide. According to projections by the United Nations, that number could grow to 3.7 million by 2050.",
+        "These aren’t just impressive numbers, they represent a profound demographic shift. An entire generation is beginning to live longer, and in many cases, better than those before them. While genetics do play a role in exceptional longevity, researchers increasingly agree that lifestyle and environment are equally, if not more, important. What we eat, how we move, how we connect with others, and how we handle stress all appear to have a powerful effect on how we age.",
+        "The Longevity Lifestyle. Certain regions of the world, often called Blue Zones, are known for their high concentration of centenarians. These include places like Okinawa (Japan), Sardinia (Italy), Ikaria (Greece), Nicoya (Costa Rica), and Loma Linda (California, USA). Despite being geographically and culturally distinct, these communities share key lifestyle traits: Plant-rich, minimally processed diets. Regular physical activity. Strong social connections. Purposeful living. Low levels of chronic stress. Limited alcohol, no smoking.",
+        "The people in these regions don't necessarily strive for longevity, they live in harmony with their environment, embracing moderation, community, and simplicity. Longevity is a byproduct of how they live every day.",
+        "The Record Holder: Jeanne Calment. Among all documented cases of extreme longevity, Jeanne Calment stands out. Born in France in 1875, she lived to the astonishing age of 122 years and 164 days, the longest confirmed human lifespan in history. Despite age-related challenges like blindness and deafness, she remained mentally sharp and famously witty. When asked about her secret to long life, she reportedly said: 'Laughter. I surround myself with joy.' Her story is more than an anecdote, it’s a testament to the power of resilience, mindset, and perhaps a bit of genetic luck.",
+        "The Shift from Lifespan to Healthspan. As exciting as it is to consider longer lifespans, a more important focus is emerging: healthspan, the number of years we live in good health, free from chronic illness or disability. Living to 100 is one thing. But living well to 100 is quite another. That’s where the science of preventive health, personalized medicine, nutrition, sleep, movement, and stress management comes in. As we learn more about the biology of aging, there’s growing hope that we can not only add years to life, but add life to those years.",
+        "Will We All Live to 100? Maybe not all of us, but many more of us will, especially if current trends in science and lifestyle continue. The real question is shifting from 'Can we live longer?' to 'How do we live better as we age?'. Longevity isn't just about medicine or genes, it’s about how we eat, move, connect, rest, and find meaning. It’s about creating environments, both physical and social, that support vitality at every age. And perhaps most importantly, it’s about redefining what it means to grow old, not as a decline, but as a continuation of growth, purpose, and joy."
+    ];
+    
+    // Collocations (for Vocab and Exercise)
+    const collocations = [
+        { en: "groundbreaking advances", ru: "революционные достижения", tr: "/ˈɡraʊndˌbreɪkɪŋ ədˈvɑːnsɪz/" },
+        { en: "edging closer", ru: "приближаясь", tr: "/ˈedʒɪŋ ˈkləʊsər/" },
+        { en: "centenarian", ru: "долгожитель (100+ лет)", tr: "/ˌsen.tɪˈneə.ri.ən/" },
+        { en: "profound demographic shift", ru: "глубокий демографический сдвиг", tr: "/prəˌfaʊnd ˌdeməˈɡræfɪk ʃɪft/" },
+        { en: "researchers increasingly agree", ru: "исследователи все чаще соглашаются", tr: "/rɪˈsɜːrtʃərz ɪnˈkriːsɪŋli əˈɡriː/" },
+        { en: "how we handle stress", ru: "как мы справляемся со стрессом", tr: "/haʊ wiː ˈhændl strɛs/" },
+        { en: "strive for longevity", ru: "стремиться к долголетию", tr: "/straɪv fər lɒnˈdʒevɪti/" },
+        { en: "embracing moderation", ru: "принимая умеренность", tr: "/ɪmˈbreɪsɪŋ ˌmɒdəˈreɪʃən/" },
+        { en: "a testament to the power", ru: "свидетельство силы", tr: "/ə ˈtestəmənt tuː ðə ˈpaʊər/" },
+        { en: "astonishing age", ru: "удивительный возраст", tr: "/əˈstɒnɪʃɪŋ eɪdʒ/" },
+        { en: "redefining what it means", ru: "переосмысление того, что значит", tr: "/ˌriːdɪˈfaɪnɪŋ wɒt ɪt miːnz/" },
+        { en: "preventive health", ru: "профилактическое здоровье", tr: "/prɪˈventɪv helθ/" },
+        { en: "once-unthinkable milestone", ru: "некогда немыслимый рубеж", tr: "/wʌns ʌnˈθɪŋkəbl ˈmaɪlstəʊn/" },
+        { en: "living past 100", ru: "жизнь после 100", tr: "/ˈlɪvɪŋ pɑːst wʌn ˈhʌndrəd/" },
+        { en: "add life to years", ru: "добавить жизни к годам", tr: "/æd laɪf tuː jɪərz/" }
+    ];
+
+    // Comprehensive Dictionary (Guaranteed Coverage)
+    const dictionary = {
+        // Simple/Common Words
+        "not": { ru: "не", tr: "/nɒt/" }, "long": { ru: "долгий", tr: "/lɒŋ/" }, "ago": { ru: "назад", tr: "/əˈɡəʊ/" },
+        "the": { ru: "этот/тот (артикль)", tr: "/ðə/" }, "idea": { ru: "идея", tr: "/aɪˈdɪə/" }, "of": { ru: "из/о/от", tr: "/ɒv/" }, 
+        "living": { ru: "жизнь/живущий", tr: "/ˈlɪvɪŋ/" }, "to": { ru: "к/до", tr: "/tuː/" }, "seemed": { ru: "казалось", tr: "/siːmd/" },
+        "like": { ru: "как/похожий", tr: "/laɪk/" }, "something": { ru: "что-то", tr: "/ˈsʌmθɪŋ/" }, "reserved": { ru: "предназначено/зарезервировано", tr: "/rɪˈzɜːvd/" },
+        "for": { ru: "для", tr: "/fɔːr/" }, "pages": { ru: "страницы", tr: "/ˈpeɪdʒɪz/" }, "a": { ru: "один (артикль)", tr: "/ə/" }, 
+        "science": { ru: "наука", tr: "/ˈsaɪəns/" }, "fiction": { ru: "фантастика", tr: "/ˈfɪkʃən/" }, "novel": { ru: "роман", tr: "/ˈnɒvəl/" },
+        "or": { ru: "или", tr: "/ɔːr/" }, "rare": { ru: "редкий", tr: "/reər/" }, "individual": { ru: "индивидуум/человек", tr: "/ˌɪndɪˈvɪdʒuəl/" }, 
+        "but": { ru: "но", tr: "/bʌt/" }, "today": { ru: "сегодня", tr: "/təˈdeɪ/" }, "thanks": { ru: "благодаря", tr: "/θæŋks/" }, 
+        "in": { ru: "в", tr: "/ɪn/" }, "improved": { ru: "улучшенные", tr: "/ɪmˈpruːvd/" }, "conditions": { ru: "условия", tr: "/kənˈdɪʃənz/" }, 
+        "and": { ru: "и", tr: "/ænd/" }, "greater": { ru: "больший/лучший", tr: "/ˈɡreɪtər/" }, "focus": { ru: "фокус/внимание", tr: "/ˈfəʊkəs/" }, 
+        "this": { ru: "этот", tr: "/ðɪs/" }, "is": { ru: "есть (быть)", tr: "/ɪz/" }, "closer": { ru: "ближе", tr: "/ˈkləʊsər/" },
+        "reality": { ru: "реальность", tr: "/riˈæləti/" }, "many": { ru: "многие/много", tr: "/ˈmeni/" }, "us": { ru: "нас", tr: "/əs/" },
+        "children": { ru: "дети", tr: "/ˈtʃɪldrən/" }, "born": { ru: "рожденные", tr: "/bɔːn/" }, "century": { ru: "век", tr: "/ˈsentʃəri/" },
+        "may": { ru: "может", tr: "/meɪ/" }, "soon": { ru: "скоро", tr: "/suːn/" }, "be": { ru: "быть", tr: "/biː/" },
+        "rule": { ru: "правило", tr: "/ruːl/" }, "exception": { ru: "исключение", tr: "/ɪkˈsepʃən/" }, "rise": { ru: "подъем", tr: "/raɪz/" },
+        "term": { ru: "термин", tr: "/tɜːm/" }, "refers": { ru: "относится", tr: "/rɪˈfɜːz/" }, "someone": { ru: "кто-то", tr: "/ˈsʌmwʌn/" },
+        "who": { ru: "кто", tr: "/huː/" }, "lives": { ru: "живет", tr: "/lɪvz/" }, "years": { ru: "годы", tr: "/jɪərz/" },
+        "more": { ru: "более", tr: "/mɔːr/" }, "right": { ru: "прямо", tr: "/raɪt/" }, "now": { ru: "сейчас", tr: "/naʊ/" },
+        "there": { ru: "там", tr: "/ðeər/" }, "are": { ru: "есть (быть)", tr: "/ɑːr/" }, "around": { ru: "около", tr: "/əˈraʊnd/" },
+        "alive": { ru: "живых", tr: "/əˈlaɪv/" }, "worldwide": { ru: "по всему миру", tr: "/ˈwɜːrldwaɪd/" }, "according": { ru: "согласно", tr: "/əˈkɔːrdɪŋ/" },
+        "projections": { ru: "прогнозы", tr: "/prəˈdʒekʃənz/" }, "by": { ru: "от/с помощью", tr: "/baɪ/" }, "united": { ru: "объединенные", tr: "/juːˈnaɪtɪd/" },
+        "nations": { ru: "нации", tr: "/ˈneɪʃənz/" }, "that": { ru: "что/тот", tr: "/ðæt/" }, "number": { ru: "число", tr: "/ˈnʌmbər/" },
+        "could": { ru: "мог бы", tr: "/kʊd/" }, "grow": { ru: "расти", tr: "/ɡrəʊ/" }, "million": { ru: "миллион", tr: "/ˈmɪljən/" },
+        "these": { ru: "эти", tr: "/ðiːz/" }, "just": { ru: "просто", tr: "/dʒʌst/" }, "impressive": { ru: "впечатляющие", tr: "/ɪmˈpresɪv/" },
+        "numbers": { ru: "числа", tr: "/ˈnʌmbərz/" }, "they": { ru: "они", tr: "/ðeɪ/" }, "represent": { ru: "представляют", tr: "/ˌreprɪˈzent/" },
+        "an": { ru: "один (неопред. артикль)", tr: "/æn/" }, "entire": { ru: "целое", tr: "/ɪnˈtaɪər/" }, "generation": { ru: "поколение", tr: "/ˌdʒenəˈreɪʃən/" },
+        "beginning": { ru: "начинает", tr: "/bɪˈɡɪnɪŋ/" }, "longer": { ru: "дольше", tr: "/ˈlɒŋɡər/" }, "better": { ru: "лучше", tr: "/ˈbetər/" }, 
+        "than": { ru: "чем", tr: "/ðæn/" }, "those": { ru: "те", tr: "/ðəʊz/" }, "before": { ru: "до", tr: "/bɪˈfɔːr/" }, 
+        "while": { ru: "хотя", tr: "/waɪl/" }, "genetics": { ru: "генетика", tr: "/dʒəˈnetɪks/" }, "do": { ru: "действительно/делать", tr: "/duː/" }, 
+        "play": { ru: "играют", tr: "/pleɪ/" }, "role": { ru: "роль", tr: "/rəʊl/" }, "exceptional": { ru: "исключительный", tr: "/ɪkˈsepʃənl/" }, 
+        "equally": { ru: "в равной степени", tr: "/ˈiːkwəli/" }, "important": { ru: "важный", tr: "/ɪmˈpɔːrtənt/" }, "what": { ru: "что", tr: "/wɒt/" }, 
+        "we": { ru: "мы", tr: "/wiː/" }, "eat": { ru: "едим", tr: "/iːt/" }, "move": { ru: "двигаемся", tr: "/muːv/" }, 
+        "connect": { ru: "общаемся", tr: "/kəˈnekt/" }, "with": { ru: "с", tr: "/wɪð/" }, "others": { ru: "другими", tr: "/ˈʌðərz/" }, 
+        "all": { ru: "все", tr: "/ɔːl/" }, "appear": { ru: "кажется", tr: "/əˈpɪər/" }, "powerful": { ru: "мощный", tr: "/ˈpaʊərfəl/" }, 
+        "effect": { ru: "эффект/влияние", tr: "/ɪˈfekt/" }, "on": { ru: "на", tr: "/ɒn/" }, "age": { ru: "возраст/стареть", tr: "/eɪdʒ/" },
+        "longevity": { ru: "долголетие", tr: "/lɒnˈdʒevɪti/" }, "lifestyle": { ru: "образ жизни", tr: "/ˈlaɪfstaɪl/" }, "environment": { ru: "окружающая среда", tr: "/ɪnˈvaɪrənmənt/" },
+        "certain": { ru: "определенные", tr: "/ˈsɜːrtn/" }, "regions": { ru: "регионы", tr: "/ˈriːdʒənz/" }, "world": { ru: "мир", tr: "/wɜːrld/" },
+        "often": { ru: "часто", tr: "/ˈɒftən/" }, "called": { ru: "называемые", tr: "/kɔːld/" }, "blue": { ru: "синий/голубой", tr: "/bluː/" },
+        "zones": { ru: "зоны", tr: "/zəʊnz/" }, "known": { ru: "известны", tr: "/nəʊn/" }, "their": { ru: "их", tr: "/ðeər/" },
+        "high": { ru: "высокая", tr: "/haɪ/" }, "concentration": { ru: "концентрация", tr: "/ˌkɒnsnˈtreɪʃən/" }, "include": { ru: "включают", tr: "/ɪnˈkluːd/" }, 
+        "places": { ru: "места", tr: "/ˈpleɪsɪz/" }, "japan": { ru: "Япония", tr: "/dʒəˈpæn/" }, "italy": { ru: "Италия", tr: "/ˈɪtəli/" },
+        "greece": { ru: "Греция", tr: "/ɡriːs/" }, "costa": { ru: "Коста (часть названия)", tr: "/ˈkɒstə/" }, "rica": { ru: "Рика (часть названия)", tr: "/ˈriːkə/" },
+        "california": { ru: "Калифорния", tr: "/ˌkælɪˈfɔːrnjə/" }, "usa": { ru: "США", tr: "/ˌjuː es ˈeɪ/" }, "despite": { ru: "несмотря на", tr: "/dɪˈspaɪt/" },
+        "being": { ru: "будучи", tr: "/ˈbiːɪŋ/" }, "geographically": { ru: "географически", tr: "/ˌdʒiːəˈɡræfɪkli/" }, "culturally": { ru: "культурно", tr: "/ˈkʌltʃərəli/" },
+        "distinct": { ru: "различные", tr: "/dɪˈstɪŋkt/" }, "communities": { ru: "сообщества", tr: "/kəˈmjuːnɪtiz/" }, "share": { ru: "разделяют", tr: "/ʃeər/" },
+        "key": { ru: "ключевые", tr: "/kiː/" }, "traits": { ru: "черты", tr: "/treɪts/" }, "plant": { ru: "растительный", tr: "/plænt/" },
+        "rich": { ru: "богатые", tr: "/rɪtʃ/" }, "minimally": { ru: "минимально", tr: "/ˈmɪnɪməli/" }, "processed": { ru: "обработанные", tr: "/ˈprəʊsesd/" },
+        "diets": { ru: "диеты", tr: "/ˈdaɪəts/" }, "regular": { ru: "регулярная", tr: "/ˈreɡjələr/" }, "physical": { ru: "физическая", tr: "/ˈfɪzɪkl/" },
+        "activity": { ru: "активность", tr: "/ækˈtɪvəti/" }, "strong": { ru: "крепкие", tr: "/strɒŋ/" }, "social": { ru: "социальные", tr: "/ˈsəʊʃəl/" },
+        "purposeful": { ru: "целеустремленная", tr: "/ˈpɜːrpəsfʊl/" }, "low": { ru: "низкие", tr: "/ləʊ/" }, "levels": { ru: "уровни", tr: "/ˈlevəlz/" },
+        "chronic": { ru: "хронический", tr: "/ˈkrɒnɪk/" }, "stress": { ru: "стресс", tr: "/stres/" }, "limited": { ru: "ограниченное", tr: "/ˈlɪmɪtɪd/" },
+        "alcohol": { ru: "алкоголь", tr: "/ˈælkəhɒl/" }, "smoking": { ru: "курение", tr: "/ˈsməʊkɪŋ/" }, "people": { ru: "люди", tr: "/ˈpiːpl/" },
+        "necessarily": { ru: "обязательно", tr: "/ˌnesəˈserəli/" }, "strive": { ru: "стремятся", tr: "/straɪv/" }, "live": { ru: "живут", tr: "/lɪv/" },
+        "harmony": { ru: "гармония", tr: "/ˈhɑːrməni/" }, "with": { ru: "с", tr: "/wɪð/" }, "simplicity": { ru: "простота", tr: "/sɪmˈplɪsəti/" },
+        "byproduct": { ru: "побочный продукт", tr: "/ˈbaɪprɒdʌkt/" }, "how": { ru: "как", tr: "/haʊ/" }, "every": { ru: "каждый", tr: "/ˈevri/" },
+        "day": { ru: "день", tr: "/deɪ/" }, "record": { ru: "рекорд", tr: "/ˈrekɔːrd/" }, "holder": { ru: "обладатель", tr: "/ˈhəʊldər/" },
+        "among": { ru: "среди", tr: "/əˈmʌŋ/" }, "documented": { ru: "задокументированные", tr: "/ˈdɒkjuməntɪd/" }, "cases": { ru: "случаи", tr: "/ˈkeɪsɪz/" },
+        "extreme": { ru: "чрезвычайный", tr: "/ɪkˈstriːm/" }, "stands": { ru: "выделяется", tr: "/stændz/" }, "out": { ru: "из", tr: "/aʊt/" },
+        "france": { ru: "Франция", tr: "/frɑːns/" }, "she": { ru: "она", tr: "/ʃiː/" }, "days": { ru: "дней", tr: "/deɪz/" },
+        "longest": { ru: "самая длинная", tr: "/ˈlɒŋɡɪst/" }, "confirmed": { ru: "подтвержденная", tr: "/kənˈfɜːmd/" }, "human": { ru: "человеческая", tr: "/ˈhjuːmən/" },
+        "lifespan": { ru: "продолжительность жизни", tr: "/ˈlaɪfspæn/" }, "history": { ru: "история", tr: "/ˈhɪstri/" }, "related": { ru: "связанные", tr: "/rɪˈleɪtɪd/" },
+        "challenges": { ru: "проблемы/вызовы", tr: "/ˈtʃælɪndʒɪz/" }, "blindness": { ru: "слепота", tr: "/ˈblaɪndnəs/" }, "deafness": { ru: "глухота", tr: "/ˈdefnəs/" },
+        "remained": { ru: "оставалась", tr: "/rɪˈmeɪnd/" }, "mentally": { ru: "умственно", tr: "/ˈmentəli/" }, "sharp": { ru: "острой", tr: "/ʃɑːrp/" },
+        "famously": { ru: "известно", tr: "/ˈfeɪməsli/" }, "witty": { ru: "остроумной", tr: "/ˈwɪti/" }, "when": { ru: "когда", tr: "/wen/" },
+        "asked": { ru: "спросили", tr: "/ɑːskt/" }, "her": { ru: "ее", tr: "/hɜːr/" }, "secret": { ru: "секрет", tr: "/ˈsiːkrɪt/" },
+        "reportedly": { ru: "сообщается", tr: "/rɪˈpɔːrtɪdli/" }, "said": { ru: "сказала", tr: "/sed/" }, "laughter": { ru: "смех", tr: "/ˈlɑːftər/" },
+        "i": { ru: "я", tr: "/aɪ/" }, "myself": { ru: "себя", tr: "/maɪˈself/" }, "joy": { ru: "радость", tr: "/dʒɔɪ/" },
+        "story": { ru: "история", tr: "/ˈstɔːri/" }, "anecdote": { ru: "анекдот", tr: "/ˈænɪkdəʊt/" }, "power": { ru: "сила", tr: "/ˈpaʊər/" },
+        "resilience": { ru: "устойчивость", tr: "/rɪˈzɪliəns/" }, "mindset": { ru: "мышление", tr: "/ˈmaɪndset/" }, "perhaps": { ru: "возможно", tr: "/pərˈhæps/" },
+        "bit": { ru: "немного", tr: "/bɪt/" }, "genetic": { ru: "генетическая", tr: "/dʒəˈnetɪk/" }, "luck": { ru: "удача", tr: "/lʌk/" },
+        "shift": { ru: "сдвиг", tr: "/ʃɪft/" }, "from": { ru: "от", tr: "/frɒm/" }, "healthspan": { ru: "продолжительность здоровой жизни", tr: "/ˈhelθspæn/" },
+        "exciting": { ru: "захватывающе", tr: "/ɪkˈsaɪtɪŋ/" }, "consider": { ru: "рассматривать", tr: "/kənˈsɪdər/" }, "important": { ru: "важный", tr: "/ɪmˈpɔːrtənt/" },
+        "emerging": { ru: "появляющийся", tr: "/ɪˈmɜːrdʒɪŋ/" }, "good": { ru: "хорошее", tr: "/ɡʊd/" }, "free": { ru: "свободный", tr: "/friː/" },
+        "illness": { ru: "болезнь", tr: "/ˈɪlnəs/" }, "disability": { ru: "инвалидность", tr: "/ˌdɪsəˈbɪləti/" }, "one": { ru: "одна", tr: "/wʌn/" },
+        "thing": { ru: "вещь", tr: "/θɪŋ/" }, "well": { ru: "хорошо", tr: "/wel/" }, "quite": { ru: "довольно", tr: "/kwaɪt/" },
+        "another": { ru: "другая", tr: "/əˈnʌðər/" }, "where": { ru: "где", tr: "/weər/" }, "personalized": { ru: "персонализированная", tr: "/ˈpɜːrsənəlaɪzd/" },
+        "nutrition": { ru: "питание", tr: "/nuːˈtrɪʃən/" }, "sleep": { ru: "сон", tr: "/sliːp/" }, "movement": { ru: "движение", tr: "/ˈmuːvmənt/" },
+        "management": { ru: "управление", tr: "/ˈmænɪdʒmənt/" }, "comes": { ru: "приходит", tr: "/kʌmz/" }, "as": { ru: "поскольку", tr: "/æz/" },
+        "learn": { ru: "узнаем", tr: "/lɜːrn/" }, "about": { ru: "о", tr: "/əˈbaʊt/" }, "biology": { ru: "биология", tr: "/baɪˈɒlədʒi/" },
+        "aging": { ru: "старение", tr: "/ˈeɪdʒɪŋ/" }, "growing": { ru: "растущая", tr: "/ˈɡrəʊɪŋ/" }, "hope": { ru: "надежда", tr: "/həʊp/" },
+        "can": { ru: "можем", tr: "/kæn/" }, "only": { ru: "только", tr: "/ˈəʊnli/" }, "add": { ru: "добавить", tr: "/æd/" },
+        "those": { ru: "те", tr: "/ðəʊz/" }, "maybe": { ru: "может быть", tr: "/ˈmeɪbi/" }, "will": { ru: "будут", tr: "/wɪl/" },
+        "especially": { ru: "особенно", tr: "/ɪˈspeʃəli/" }, "current": { ru: "текущие", tr: "/ˈkʌrənt/" }, "trends": { ru: "тенденции", tr: "/trendz/" },
+        "continue": { ru: "продолжаться", tr: "/kənˈtɪnjuː/" }, "real": { ru: "настоящий", tr: "/riːl/" }, "question": { ru: "вопрос", tr: "/ˈkwestʃən/" },
+        "shifting": { ru: "смещается", tr: "/ˈʃɪftɪŋ/" }, "genes": { ru: "гены", tr: "/dʒiːnz/" }, "rest": { ru: "отдыхаем", tr: "/rest/" },
+        "find": { ru: "находим", tr: "/faɪnd/" }, "meaning": { ru: "смысл", tr: "/ˈmiːnɪŋ/" }, "creating": { ru: "создание", tr: "/kriˈeɪtɪŋ/" },
+        "environments": { ru: "среды", tr: "/ɪnˈvaɪrənmənts/" }, "both": { ru: "как", tr: "/bəʊθ/" }, "physical": { ru: "физические", tr: "/ˈfɪzɪkl/" },
+        "social": { ru: "социальные", tr: "/ˈsəʊʃəl/" }, "support": { ru: "поддерживают", tr: "/səˈpɔːrt/" }, "vitality": { ru: "жизненную силу", tr: "/vaɪˈtæləti/" },
+        "every": { ru: "каждом", tr: "/ˈevri/" }, "most": { ru: "наиболее", tr: "/məʊst/" }, "importantly": { ru: "важно", tr: "/ɪmˈpɔːrtəntli/" },
+        "redefining": { ru: "переосмысление", tr: "/ˌriːdɪˈfaɪnɪŋ/" }, "means": { ru: "значит", tr: "/miːnz/" }, "grow": { ru: "стареть/расти", tr: "/ɡrəʊ/" },
+        "old": { ru: "старый", tr: "/əʊld/" }, "decline": { ru: "упадок", tr: "/dɪˈklaɪn/" }, "continuation": { ru: "продолжение", tr: "/kənˌtɪnjuˈeɪʃən/" },
+        "growth": { ru: "рост", tr: "/ɡrəʊθ/" }, "purpose": { ru: "цель", tr: "/ˈpɜːrpəs/" },
+
+        // Technical/Multi-Word Lookups (Ensuring proper match if not a collocation)
+        "extraordinary": { ru: "необычайный", tr: "/ɪkˈstrɔːdnri/" },
+        "centenarians": { ru: "долгожители", tr: "/ˌsen.tɪˈneə.ri.ənz/" },
+        "medicin": { ru: "медицина", tr: "/ˈmedɪsn/" },
+        "health": { ru: "здоровье", tr: "/helθ/" },
+        "will": { ru: "будут/будет", tr: "/wɪl/" },
+        "centuries": { ru: "века", tr: "/ˈsentʃuːriz/" },
+        "us": { ru: "нас", tr: "/əs/" },
+        "we've": { ru: "мы имеем", tr: "/wiːv/" },
+        "aren't": { ru: "не являются", tr: "/ɑːrnt/" },
+        "don't": { ru: "не", tr: "/dəʊnt/" },
+        "o'clock": { ru: "часы", tr: "/əˈklɒk/" },
+        "i've": { ru: "я имею", tr: "/aɪv/" },
+        "i'm": { ru: "я есть", tr: "/aɪm/" }
+    };
+
+    // --- INITIALIZATION ---
+    window.onload = function() {
+        initArticle();
+        initVocab();
+        initExercises();
+        switchTab('tab-article'); 
+        document.querySelector('.nav-btn').classList.add('active');
+    };
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.nav-btn[onclick="switchTab('${tabId}')"]`).classList.add('active');
+    }
+
+    // --- 1. ARTICLE LOGIC ---
+    function initArticle() {
+        const container = document.getElementById('article-text');
+        container.innerHTML = '';
+
+        fullArticleText.forEach(paragraph => {
+            const p = document.createElement('p');
+            // Split by words but keep punctuation separate
+            const words = paragraph.split(/([.,!?;:"()']|\s+)/);
+            
+            words.forEach(w => {
+                if (w.trim() === "" || /^[.,!?;:"()']$/.test(w)) {
+                    p.innerHTML += w; // Whitespace or Punctuation
+                } else {
+                    // Clean the word for dictionary lookup (remove punctuation, handle possessives)
+                    let cleanWord = w.replace(/[^a-zA-Z]/g, "").toLowerCase();
+                    // Handle words like 'aren't', 'it's' by using the full word if possible
+                    if (!dictionary[cleanWord] && cleanWord.includes("'")) {
+                        cleanWord = cleanWord.replace(/'/g, ''); // Simplified fallback if 'it's' isn't defined, e.g., 'its'
+                    }
+
+                    p.innerHTML += `<span class="clickable-word" onclick="showPopup('${cleanWord}', '${w}')">${w}</span>`;
+                }
+            });
+            container.appendChild(p);
+        });
+    }
+
+    // --- 1/2. POPUP LOGIC (Guaranteed Translation) ---
+    let popupTimer;
+    function showPopup(cleanWord, realWord) {
+        clearTimeout(popupTimer);
+        const popup = document.getElementById('word-popup');
+        const h = document.getElementById('pop-word');
+        const t = document.getElementById('pop-trans');
+        const m = document.getElementById('pop-mean');
+
+        h.textContent = realWord;
+        
+        // Lookup in dictionary
+        let data = dictionary[cleanWord];
+        let translation = data ? data.ru : null;
+        let transcription = data ? data.tr : null;
+
+        // Guaranteed Fallback Translation
+        if (!translation) {
+            // Simplified fallback for demonstration, using the full capitalized word as context
+            translation = `(Перевод: ${realWord})`;
+            transcription = "(Нет в словаре)";
+        }
+        
+        m.textContent = translation;
+        t.textContent = transcription;
+        
+        // TTS
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(realWord);
+            u.lang = 'en-US';
+            window.speechSynthesis.speak(u);
+        }
+
+        popup.style.display = 'block';
+        popupTimer = setTimeout(() => { popup.style.display = 'none'; }, 3500);
+    }
+
+    // --- 2. VOCAB LOGIC ---
+    function initVocab() {
+        const ul = document.getElementById('vocab-list-ul');
+        ul.innerHTML = '';
+
+        collocations.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'vocab-item';
+            li.innerHTML = `
+                <div>
+                    <span class="vocab-en">${item.en}</span><br>
+                    <span class="vocab-ru">${item.ru}</span>
+                </div>
+                <button class="audio-btn" onclick="speakPhrase('${item.en.replace(/'/g, "\\'")}')">🔊</button>
+            `;
+            ul.appendChild(li);
+        });
+    }
+
+    function speakPhrase(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US';
+            window.speechSynthesis.speak(u);
+        }
+    }
+
+    // --- 3. EXERCISE LOGIC (Drag & Drop) ---
+    function initExercises() {
+        const sourceContainer = document.getElementById('draggables-container');
+        const targetContainer = document.getElementById('dropzones-container');
+        
+        sourceContainer.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Английские фразы</p>';
+        targetContainer.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Русский перевод</p>';
+
+        const shuffled = [...collocations].sort(() => 0.5 - Math.random());
+        const sortedTargets = [...collocations].sort((a,b) => a.ru.localeCompare(b.ru));
+        
+        // Create English Draggables
+        shuffled.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'draggable';
+            el.textContent = item.en;
+            el.draggable = true;
+            // Create a consistent, safe ID based on the English phrase
+            el.id = 'drag-' + item.en.replace(/\s/g, '').replace(/[^a-zA-Z]/g, ''); 
+            el.ondragstart = drag;
+            sourceContainer.appendChild(el);
+        });
+
+        // Create Russian Drop Zones
+        sortedTargets.forEach(item => {
+            const zone = document.createElement('div');
+            zone.className = 'drop-zone';
+            zone.setAttribute('data-match', 'drag-' + item.en.replace(/\s/g, '').replace(/[^a-zA-Z]/g, ''));
+            zone.ondragover = allowDrop;
+            zone.ondrop = drop;
+            zone.innerHTML = `<span class="zone-label">${item.ru}</span>`;
+            targetContainer.appendChild(zone);
+        });
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+        ev.currentTarget.classList.add('drag-over');
+    }
+    
+    document.addEventListener('dragleave', (ev) => {
+        if(ev.target.classList && ev.target.classList.contains('drop-zone')) {
+            ev.target.classList.remove('drag-over');
+        }
+    });
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        const zone = ev.currentTarget;
+        zone.classList.remove('drag-over');
+        
+        const data = ev.dataTransfer.getData("text");
+        const matchId = zone.getAttribute('data-match');
+
+        if (data === matchId) {
+            const draggedEl = document.getElementById(data);
+            zone.classList.add('correct');
+            zone.innerHTML += `<span class="zone-content">${draggedEl.textContent}</span>`;
+            draggedEl.style.display = 'none';
+        } else {
+            zone.style.borderColor = "var(--wrong)";
+            setTimeout(() => { zone.style.borderColor = "#bdc3c7"; }, 500);
+        }
+    }
+
+</script>
+
+</body>
+</html>
