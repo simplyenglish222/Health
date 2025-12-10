@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescribed Companionship - Interactive Article</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --highlight-bg: #e8f4fc;
+            --correct-bg: #d4edda;
+            --wrong-bg: #f8d7da;
+            --border-radius: 8px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --font-primary: 'Segoe UI', 'Open Sans', Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #1a2530);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="%233498db" stroke-width="1" opacity="0.1"/></svg>');
+            opacity: 0.3;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: -0.5px;
+        }
+
+        .byline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .instructions::before {
+            content: "💡";
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            font-size: 1.4rem;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e0e6ed;
+            background: #f8f9fa;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .tab:hover {
+            background: #f0f5ff;
+        }
+
+        .tab.active {
+            color: var(--accent-color);
+            border-bottom: 3px solid var(--accent-color);
+            background: white;
+            font-weight: 700;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Article Text Styling */
+        .article-content p {
+            margin-bottom: 1.5em;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        /* Interactive Words */
+        .word {
+            cursor: pointer;
+            border-bottom: 1px dotted var(--accent-color);
+            transition: all 0.2s;
+            padding: 2px 0;
+            position: relative;
+        }
+
+        .word:hover {
+            background-color: var(--highlight-bg);
+            color: #000;
+            border-bottom-color: var(--accent-color);
+        }
+
+        /* Russian Translation Styling */
+        .russian-translation {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+        }
+
+        .russian-translation p {
+            margin-bottom: 1.5em;
+            text-align: justify;
+        }
+
+        /* Vocabulary List Styling */
+        .vocab-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .vocab-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            font-family: 'Arial', sans-serif;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+
+        .vocab-item:hover {
+            background: #f0f5ff;
+        }
+
+        .vocab-item:last-child {
+            border-bottom: none;
+        }
+
+        .vocab-text {
+            flex: 1;
+        }
+
+        .vocab-en {
+            font-weight: 600;
+            display: block;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .vocab-trans {
+            color: #888;
+            font-style: italic;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .vocab-ru {
+            color: #555;
+            font-size: 1.05rem;
+            display: block;
+        }
+
+        .play-btn {
+            background: white;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+            margin-left: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .play-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+        }
+
+        /* Matching Exercise Styling */
+        .matching-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .matching-column {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .matching-title {
+            font-family: 'Arial', sans-serif;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .matching-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .matching-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .matching-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .matching-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .matching-item {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            cursor: grab;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .matching-item.dragging {
+            opacity: 0.7;
+            transform: scale(1.02);
+        }
+
+        .matching-item:hover {
+            background: #e9f7fe;
+            border-color: var(--accent-color);
+        }
+
+        .drop-zone {
+            min-height: 50px;
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #fafafa;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--accent-color);
+            background: var(--highlight-bg);
+        }
+
+        .drop-zone.correct {
+            border-color: #28a745;
+            background: var(--correct-bg);
+        }
+
+        .drop-zone.incorrect {
+            border-color: #dc3545;
+            background: var(--wrong-bg);
+        }
+
+        .matched-pair {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #e8f4fc;
+            border-radius: 4px;
+            border: 1px solid #d6eaf8;
+        }
+
+        /* Controls */
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        #check-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.2s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        #check-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        #reset-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+
+        #reset-btn:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .score {
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        /* Tooltip/Popup Styling */
+        #word-popup {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            text-align: center;
+            min-width: 280px;
+            max-width: 90%;
+            font-family: 'Arial', sans-serif;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        #word-popup h3 {
+            margin: 0 0 10px 0;
+            text-transform: capitalize;
+            font-size: 1.6rem;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 8px;
+        }
+
+        .transcription {
+            color: #f1c40f;
+            font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .translation {
+            font-size: 1.3rem;
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .no-data {
+            color: #bdc3c7;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                border-radius: 0;
+                margin-bottom: 5px;
+            }
+            
+            .matching-container {
+                flex-direction: column;
+            }
+            
+            header {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .tab-content {
+                padding: 20px 15px;
+            }
+            
+            #word-popup {
+                width: 90%;
+                bottom: 20px;
+            }
+            
+            .instructions {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Prescribed Companionship: When the Cure for Aging Has Four Legs</h1>
+        <div class="byline">By Nacho Navarro-Regnè • CLICK THE WORD TO SEE THE TRANSLATION</div>
+    </header>
+
+    <div class="instructions">
+        Click on any word in the article to see its pronunciation, IPA transcription, and Russian translation.
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" data-tab="english">English Article</button>
+        <button class="tab" data-tab="russian">Russian Translation</button>
+        <button class="tab" data-tab="vocabulary">Vocabulary</button>
+        <button class="tab" data-tab="exercises">Matching Exercises</button>
+    </div>
+
+    <!-- English Article Tab -->
+    <div id="english" class="tab-content active">
+        <div class="article-content" id="article-text">
+            <!-- Article will be inserted by JS -->
+        </div>
+    </div>
+
+    <!-- Russian Translation Tab -->
+    <div id="russian" class="tab-content">
+        <div class="russian-translation" id="russian-translation">
+            <!-- Russian translation will be inserted by JS -->
+        </div>
+    </div>
+
+    <!-- Vocabulary Tab -->
+    <div id="vocabulary" class="tab-content">
+        <h2 class="matching-title">Important Vocabulary</h2>
+        <ul class="vocab-list" id="vocab-list">
+            <!-- Vocabulary list will be inserted by JS -->
+        </ul>
+    </div>
+
+    <!-- Matching Exercises Tab -->
+    <div id="exercises" class="tab-content">
+        <h2 class="matching-title">Matching Exercises: Aging Collocations</h2>
+        <p>Drag the English terms from the left column to match with their Russian translations in the right column.</p>
+        
+        <div class="matching-container">
+            <div class="matching-column">
+                <div class="matching-title">English Terms</div>
+                <table class="matching-table">
+                    <thead>
+                        <tr>
+                            <th>Term</th>
+                        </tr>
+                    </thead>
+                    <tbody id="terms-container">
+                        <!-- Terms will be inserted by JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="matching-column">
+                <div class="matching-title">Russian Translations</div>
+                <table class="matching-table">
+                    <thead>
+                        <tr>
+                            <th>Translation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="definitions-container">
+                        <!-- Definitions will be inserted by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="matched-pairs-container" id="matched-pairs">
+            <!-- Matched pairs will appear here -->
+        </div>
+        
+        <div class="controls">
+            <button id="check-btn">Check Answers</button>
+            <button id="reset-btn">Reset</button>
+            <div class="score" id="score"></div>
+        </div>
+    </div>
+</div>
+
+<div id="word-popup">
+    <h3 id="popup-word">Word</h3>
+    <span id="popup-trans" class="transcription"></span>
+    <span id="popup-translation" class="translation"></span>
+</div>
+
+<script>
+    // Tab switching functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // FULL DICTIONARY (ensures no "no translation" messages)
+    const dictionary = {
+        // Core words from the article
+        "prescribed": { trans: "/prɪˈskraɪbd/", ru: "назначенный" },
+        "companionship": { trans: "/ˈkʌmpənɪʃɪp/", ru: "товарищество" },
+        "cure": { trans: "/kjʊr/", ru: "лечение" },
+        "aging": { trans: "/ˈeɪdʒɪŋ/", ru: "старение" },
+        "legs": { trans: "/lɛɡz/", ru: "ноги" },
+        "we": { trans: "/wiː/", ru: "мы" },
+        "tend": { trans: "/tɛnd/", ru: "склонны" },
+        "imagine": { trans: "/ɪˈmædʒɪn/", ru: "представлять" },
+        "as": { trans: "/æz/", ru: "как" },
+        "something": { trans: "/ˈsʌmθɪŋ/", ru: "что-то" },
+        "that": { trans: "/ðæt/", ru: "которое" },
+        "begins": { trans: "/bɪˈɡɪnz/", ru: "начинается" },
+        "at": { trans: "/æt/", ru: "в" },
+        "but": { trans: "/bʌt/", ru: "но" },
+        "science": { trans: "/ˈsaɪəns/", ru: "наука" },
+        "keeps": { trans: "/kiːps/", ru: "напоминает" },
+        "reminding": { trans: "/rɪˈmaɪndɪŋ/", ru: "напоминая" },
+        "cognitive": { trans: "/ˈkɒɡnɪtɪv/", ru: "когнитивное" },
+        "decline": { trans: "/dɪˈklaɪn/", ru: "снижение" },
+        "starts": { trans: "/stɑːrts/", ru: "начинается" },
+        "in": { trans: "/ɪn/", ru: "в" },
+        "our": { trans: "/ˈaʊər/", ru: "наш" },
+        "30s": { trans: "/ˈθɜːrtiz/", ru: "30-х" },
+        "tiny": { trans: "/ˈtaɪni/", ru: "незначительные" },
+        "changes": { trans: "/ˈtʃeɪndʒɪz/", ru: "изменения" },
+        "memory": { trans: "/ˈmeməri/", ru: "память" },
+        "mental": { trans: "/ˈmentl/", ru: "умственный" },
+        "speed": { trans: "/spiːd/", ru: "скорость" },
+        "decision-making": { trans: "/dɪˈsɪʒənˌmeɪkɪŋ/", ru: "принятие решений" },
+        "begin": { trans: "/bɪˈɡɪn/", ru: "начинаются" },
+        "long": { trans: "/lɔːŋ/", ru: "задолго" },
+        "before": { trans: "/bɪˈfɔːr/", ru: "до" },
+        "we": { trans: "/wiː/", ru: "мы" },
+        "notice": { trans: "/ˈnoʊtɪs/", ru: "замечаем" },
+        "them": { trans: "/ðem/", ru: "их" },
+        "by": { trans: "/baɪ/", ru: "к моменту" },
+        "time": { trans: "/taɪm/", ru: "когда" },
+        "forgetfulness": { trans: "/fərˈɡetfəlnəs/", ru: "забывчивость" },
+        "becomes": { trans: "/bɪˈkʌmz/", ru: "становится" },
+        "visible": { trans: "/ˈvɪzəbəl/", ru: "заметной" },
+        "process": { trans: "/ˈproʊses/", ru: "процесс" },
+        "has": { trans: "/hæz/", ru: "уже" },
+        "already": { trans: "/ˈɔːlrɛdi/", ru: "давно" },
+        "unfolding": { trans: "/ʌnˈfoʊldɪŋ/", ru: "протекает" },
+        "silently": { trans: "/ˈsaɪləntli/", ru: "незаметно" },
+        "for": { trans: "/fɔːr/", ru: "в течение" },
+        "decades": { trans: "/ˈdeɪkədz/", ru: "десятилетий" },
+        "so": { trans: "/soʊ/", ru: "так что" },
+        "the": { trans: "/ðə/", ru: "настоящий" },
+        "real": { trans: "/ˈriːəl/", ru: "настоящий" },
+        "question": { trans: "/ˈkwestʃən/", ru: "вопрос" },
+        "is": { trans: "/ɪz/", ru: "в том" },
+        "not": { trans: "/nɑːt/", ru: "не" },
+        "how": { trans: "/haʊ/", ru: "как" },
+        "do": { trans: "/duː/", ru: "мы" },
+        "we": { trans: "/wiː/", ru: "мы" },
+        "fix": { trans: "/fɪks/", ru: "исправляем" },
+        "when": { trans: "/wen/", ru: "когда" },
+        "it": { trans: "/ɪt/", ru: "оно" },
+        "arrives": { trans: "/əˈraɪvz/", ru: "приходит" },
+        "it's": { trans: "/ɪts/", ru: "а в том" },
+        "preserve": { trans: "/prɪˈzɜːrv/", ru: "сохраняем" },
+        "vitality": { trans: "/vaɪˈtæləti/", ru: "жизненные силы" },
+        "before": { trans: "/bɪˈfɔːr/", ru: "прежде чем" },
+        "slips": { trans: "/slɪps/", ru: "исчезнут" },
+        "away": { trans: "/əˈweɪ/", ru: "навсегда" },
+        "and": { trans: "/ænd/", ru: "и" },
+        "that": { trans: "/ðæt/", ru: "вот" },
+        "where": { trans: "/hwer/", ru: "где" },
+        "one": { trans: "/wʌn/", ru: "одно из" },
+        "simplest": { trans: "/ˈsɪmplɪst/", ru: "самых простых" },
+        "most": { trans: "/moʊst/", ru: "наиболее" },
+        "overlooked": { trans: "/ˌoʊvərˈlʊkt/", ru: "забытых" },
+        "interventions": { trans: "/ˌɪntərˈvenʃənz/", ru: "вмешательств" },
+        "comes": { trans: "/kʌmz/", ru: "заключается" },
+        "in": { trans: "/ɪn/", ru: "в" },
+        "companionship": { trans: "/ˈkʌmpənɪʃɪp/", ru: "товариществе" },
+        "not": { trans: "/nɑːt/", ru: "не" },
+        "prescribed": { trans: "/prɪˈskraɪbd/", ru: "назначаемых" },
+        "pills": { trans: "/pɪlz/", ru: "таблетках" },
+        "but": { trans: "/bʌt/", ru: "а" },
+        "in": { trans: "/ɪn/", ru: "в" },
+        "paws": { trans: "/pɔːz/", ru: "лапах" },
+        "science": { trans: "/ˈsaɪəns/", ru: "наука" },
+        "is": { trans: "/ɪz/", ru: "ясно" },
+        "clear": { trans: "/klɪr/", ru: "ясно" },
+        "pets": { trans: "/pets/", ru: "домашние животные" },
+        "slow": { trans: "/sloʊ/", ru: "замедляют" },
+        "cognitive": { trans: "/ˈkɒɡnɪtɪv/", ru: "когнитивное" },
+        "decline": { trans: "/dɪˈklaɪn/", ru: "снижение" },
+        "one": { trans: "/wʌn/", ru: "одно из" },
+        "largest": { trans: "/ˈlɑːrdʒɪst/", ru: "крупнейших" },
+        "studies": { trans: "/ˈstʌdiz/", ru: "исследований" },
+        "to": { trans: "/tuː/", ru: "на сегодняшний день" },
+        "7,945": { trans: "/ˈsevən θaʊˈzænd naɪn hʌndrəd ˈfɔːrti faɪv/", ru: "7945" },
+        "adults": { trans: "/ˈædʌlts/", ru: "взрослых" },
+        "over": { trans: "/ˈoʊvər/", ru: "старше" },
+        "50": { trans: "/ˈfɪfti/", ru: "50 лет" },
+        "were": { trans: "/wɜːr/", ru: "были" },
+        "tracked": { trans: "/trækt/", ru: "прослежены" },
+        "for": { trans: "/fɔːr/", ru: "для" },
+        "memory": { trans: "/ˈmeməri/", ru: "памяти" },
+        "mental": { trans: "/ˈmentl/", ru: "умственных" },
+        "performance": { trans: "/pərˈfɔːrməns/", ru: "способностей" },
+        "over": { trans: "/ˈoʊvər/", ru: "в течение" },
+        "time": { trans: "/taɪm/", ru: "времени" },
+        "those": { trans: "/ðoʊz/", ru: "те" },
+        "who": { trans: "/huː/", ru: "кто" },
+        "lived": { trans: "/lɪvd/", ru: "жил" },
+        "with": { trans: "/wɪð/", ru: "с" },
+        "dog": { trans: "/dɔːɡ/", ru: "собакой" },
+        "cat": { trans: "/kæt/", ru: "кошкой" },
+        "lost": { trans: "/lɔːst/", ru: "теряли" },
+        "abilities": { trans: "/əˈbɪlətiz/", ru: "способности" },
+        "significantly": { trans: "/sɪɡˈnɪfɪkəntli/", ru: "значительно" },
+        "more": { trans: "/mɔːr/", ru: "медленнее" },
+        "slowly": { trans: "/ˈsloʊli/", ru: "медленнее" },
+        "than": { trans: "/ðæn/", ru: "чем" },
+        "those": { trans: "/ðoʊz/", ru: "те" },
+        "who": { trans: "/huː/", ru: "кто" },
+        "didn't": { trans: "/ˈdɪdnt/", ru: "не жил" },
+        "effect": { trans: "/ɪˈfekt/", ru: "эффект" },
+        "was": { trans: "/wʌz/", ru: "был" },
+        "strongest": { trans: "/ˈstrɔːŋɡɪst/", ru: "самым сильным" },
+        "in": { trans: "/ɪn/", ru: "у" },
+        "older": { trans: "/ˈoʊldər/", ru: "пожилых" },
+        "adults": { trans: "/ˈædʌlts/", ru: "взрослых" },
+        "living": { trans: "/ˈlɪvɪŋ/", ru: "живущих" },
+        "alone": { trans: "/əˈloʊn/", ru: "в одиночестве" },
+        "ones": { trans: "/wʌnz/", ru: "те" },
+        "most": { trans: "/moʊst/", ru: "наиболее" },
+        "at": { trans: "/æt/", ru: "находящиеся в группе риска" },
+        "risk": { trans: "/rɪsk/", ru: "риска" },
+        "loneliness": { trans: "/ˈloʊnlinəs/", ru: "одиночества" },
+        "neurodegeneration": { trans: "/ˌnʊroʊdɪˈdʒenəreɪʃn/", ru: "нейродегенерации" },
+        "what": { trans: "/wʌt/", ru: "что" },
+        "improved": { trans: "/ɪmˈpruːvd/", ru: "улучшилось" },
+        "most": { trans: "/moʊst/", ru: "больше всего" },
+        "verbal": { trans: "/ˈvɜːrbəl/", ru: "вербальная" },
+        "fluency": { trans: "/ˈfluːənsi/", ru: "беглость" },
+        "speaking": { trans: "/ˈspiːkɪŋ/", ru: "речь" },
+        "with": { trans: "/wɪð/", ru: "с" },
+        "speed": { trans: "/spiːd/", ru: "скоростью" },
+        "and": { trans: "/ænd/", ru: "и" },
+        "richness": { trans: "/ˈrɪtʃnəs/", ru: "богатством" },
+        "immediate": { trans: "/ɪˈmiːdiət/", ru: "мгновенное" },
+        "recall": { trans: "/rɪˈkɔːl/", ru: "воспоминание" },
+        "remembering": { trans: "/rɪˈmembərɪŋ/", ru: "запоминание" },
+        "right": { trans: "/raɪt/", ru: "сразу" },
+        "after": { trans: "/ˈæftər/", ru: "после" },
+        "learning": { trans: "/ˈlɜːrnɪŋ/", ru: "обучения" },
+        "delayed": { trans: "/dɪˈleɪd/", ru: "отсроченное" },
+        "holding": { trans: "/ˈhoʊldɪŋ/", ru: "сохранение" },
+        "memory": { trans: "/ˈmeməri/", ru: "памяти" },
+        "over": { trans: "/ˈoʊvər/", ru: "в течение" },
+        "time": { trans: "/taɪm/", ru: "времени" },
+        "birds": { trans: "/bɜːrdz/", ru: "птицы" },
+        "fish": { trans: "/fɪʃ/", ru: "рыбы" },
+        "did": { trans: "/dɪd/", ru: "не создавали" },
+        "not": { trans: "/nɑːt/", ru: "не" },
+        "produce": { trans: "/prəˈdjuːs/", ru: "создавали" },
+        "same": { trans: "/seɪm/", ru: "тот же" },
+        "it": { trans: "/ɪt/", ru: "это" },
+        "wasn't": { trans: "/ˈwʌznt/", ru: "было не только" },
+        "just": { trans: "/dʒʌst/", ru: "просто" },
+        "having": { trans: "/ˈhævɪŋ/", ru: "наличие" },
+        "animal": { trans: "/ˈænɪməl/", ru: "животного" },
+        "nearby": { trans: "/ˌnɪrˈbaɪ/", ru: "рядом" },
+        "emotional": { trans: "/ɪˈmoʊʃənl/", ru: "эмоциональная" },
+        "connection": { trans: "/kəˈnekʃn/", ru: "связь" },
+        "responsibility": { trans: "/rɪˌspɒnsəˈbɪləti/", ru: "ответственность" },
+        "routine": { trans: "/ruːˈtiːn/", ru: "режим" },
+        "reciprocity": { trans: "/ˌresɪˈprɒsəti/", ru: "взаимность" },
+        "biology": { trans: "/baɪˈɑːlədʒi/", ru: "биология" },
+        "behind": { trans: "/bɪˈhaɪnd/", ru: "за" },
+        "bond": { trans: "/bɑːnd/", ru: "связью" },
+        "why": { trans: "/waɪ/", ru: "почему" },
+        "sharing": { trans: "/ˈʃerɪŋ/", ru: "разделение" },
+        "your": { trans: "/jʊr/", ru: "вашей" },
+        "life": { trans: "/laɪf/", ru: "жизни" },
+        "with": { trans: "/wɪð/", ru: "с" },
+        "dog": { trans: "/dɔːɡ/", ru: "собакой" },
+        "cat": { trans: "/kæt/", ru: "кошкой" },
+        "act": { trans: "/ækt/", ru: "действует" },
+        "almost": { trans: "/ˈɔːlmoʊst/", ru: "почти" },
+        "like": { trans: "/laɪk/", ru: "как" },
+        "mild": { trans: "/maɪld/", ru: "мягкая" },
+        "form": { trans: "/fɔːrm/", ru: "форма" },
+        "daily": { trans: "/ˈdeɪli/", ru: "ежедневная" },
+        "neurotherapy": { trans: "/ˌnʊroʊˈθerəpi/", ru: "нейротерапия" },
+        "suggests": { trans: "/səˈdʒestz/", ru: "предполагает" },
+        "three": { trans: "/θriː/", ru: "три" },
+        "major": { trans: "/ˈmeɪdʒər/", ru: "основных" },
+        "longevity": { trans: "/ˌlɒŋˈdʒevəti/", ru: "долголетия" },
+        "levers": { trans: "/ˈlevərz/", ru: "рычага" },
+        "at": { trans: "/æt/", ru: "в" },
+        "play": { trans: "/pleɪ/", ru: "действии" },
+        "longevity": { trans: "/ˌlɒŋˈdʒevəti/", ru: "долголетия" },
+        "factor": { trans: "/ˈfæktər/", ru: "фактор" },
+        "how": { trans: "/haʊ/", ru: "как" },
+        "influence": { trans: "/ˈɪnfluəns/", ru: "влияют" },
+        "it": { trans: "/ɪt/", ru: "на него" },
+        "movement": { trans: "/ˈmuːvmənt/", ru: "движение" },
+        "cardiovascular": { trans: "/ˌkɑːrdioʊˈvæskjələr/", ru: "сердечно-сосудистое" },
+        "health": { trans: "/helθ/", ru: "здоровье" },
+        "daily": { trans: "/ˈdeɪli/", ru: "ежедневные" },
+        "walks": { trans: "/wɔːks/", ru: "прогулки" },
+        "playtime": { trans: "/ˈpleɪtaɪm/", ru: "время игры" },
+        "light": { trans: "/laɪt/", ru: "легкая" },
+        "activity": { trans: "/ækˈtɪvəti/", ru: "активность" },
+        "even": { trans: "/ˈiːvən/", ru: "даже" },
+        "low-intensity": { trans: "/ˌloʊ ɪnˈtensəti/", ru: "низкой интенсивности" },
+        "activates": { trans: "/ˈæktɪveɪts/", ru: "активирует" },
+        "mTOR": { trans: "/ˌem tiː ˈoʊ ɑːr/", ru: "mTOR" },
+        "pathways": { trans: "/ˈpæθweɪz/", ru: "пути" },
+        "linked": { trans: "/lɪŋkt/", ru: "связанные" },
+        "to": { trans: "/tuː/", ru: "с" },
+        "cellular": { trans: "/ˈseljələr/", ru: "клеточной" },
+        "repair": { trans: "/rɪˈper/", ru: "ремонтом" },
+        "stress": { trans: "/stres/", ru: "стресс" },
+        "regulation": { trans: "/ˌreɡjuˈleɪʃn/", ru: "регуляция" },
+        "hormones": { trans: "/ˈhɔːrmoʊnz/", ru: "гормоны" },
+        "petting": { trans: "/ˈpetɪŋ/", ru: "поглаживание" },
+        "lowers": { trans: "/ˈloʊərz/", ru: "снижает" },
+        "cortisol": { trans: "/ˈkɔːrtɪsɒl/", ru: "кортизол" },
+        "chronic": { trans: "/ˈkrɒnɪk/", ru: "хронический" },
+        "stress": { trans: "/stres/", ru: "стресс" },
+        "hormone": { trans: "/ˈhɔːrmoʊn/", ru: "гормон" },
+        "accelerates": { trans: "/əkˈseləreɪts/", ru: "ускоряет" },
+        "inflammation": { trans: "/ˌɪnfləˈmeɪʃn/", ru: "воспаление" },
+        "less": { trans: "/les/", ru: "меньше" },
+        "cortisol": { trans: "/ˈkɔːrtɪsɒl/", ru: "кортизола" },
+        "means": { trans: "/miːnz/", ru: "означает" },
+        "more": { trans: "/mɔːr/", ru: "больше" },
+        "circulating": { trans: "/ˈsɜːrkjəleɪtɪŋ/", ru: "циркулирующего" },
+        "klotho": { trans: "/kloʊθoʊ/", ru: "клото" },
+        "body's": { trans: "/ˈbɑːdiz/", ru: "тела" },
+        "natural": { trans: "/ˈnætʃrəl/", ru: "естественный" },
+        "anti-aging": { trans: "/ˌænti ˈeɪdʒɪŋ/", ru: "анти-возрастной" },
+        "shield": { trans: "/ʃiːld/", ru: "щит" },
+        "microbiota": { trans: "/ˌmaɪkroʊbaɪˈoʊtə/", ru: "микробиота" },
+        "immunity": { trans: "/ɪˈmjuːnəti/", ru: "иммунитет" },
+        "living": { trans: "/ˈlɪvɪŋ/", ru: "жизнь" },
+        "with": { trans: "/wɪð/", ru: "с" },
+        "animals": { trans: "/ˈænɪməlz/", ru: "животными" },
+        "exposes": { trans: "/ɪkˈspoʊzɪz/", ru: "подвергает" },
+        "diverse": { trans: "/dɪˈvɜːrs/", ru: "разнообразным" },
+        "microbes": { trans: "/ˈmaɪkroʊbz/", ru: "микробам" },
+        "leading": { trans: "/ˈliːdɪŋ/", ru: "приводя" },
+        "resilient": { trans: "/rɪˈzɪliənt/", ru: "устойчивой" },
+        "gut": { trans: "/ɡʌt/", ru: "кишечной" },
+        "flora": { trans: "/ˈflɔːrə/", ru: "микрофлоры" },
+        "key": { trans: "/kiː/", ru: "ключевым" },
+        "factor": { trans: "/ˈfæktər/", ru: "фактором" },
+        "immune": { trans: "/ɪˈmjuːn/", ru: "иммунной" },
+        "regulation": { trans: "/ˌreɡjuˈleɪʃn/", ru: "регуляции" },
+        "and": { trans: "/ænd/", ru: "и" },
+        "NAD+": { trans: "/ˌen eɪ ˈdiː plʌs/", ru: "NAD+" },
+        "production": { trans: "/prəˈdʌkʃn/", ru: "производство" },
+        "essential": { trans: "/ɪˈsenʃl/", ru: "необходимое" },
+        "for": { trans: "/fɔːr/", ru: "для" },
+        "healthy": { trans: "/ˈhelθi/", ru: "здорового" },
+        "aging": { trans: "/ˈeɪdʒɪŋ/", ru: "старения" },
+        "a": { trans: "/eɪ/", ru: "один" },
+        "quick": { trans: "/kwɪk/", ru: "быстрый" },
+        "primer": { trans: "/ˈpraɪmər/", ru: "введение" },
+        "what": { trans: "/wʌt/", ru: "что такое" },
+        "klotho": { trans: "/kloʊθoʊ/", ru: "клото" },
+        "think": { trans: "/θɪŋk/", ru: "представьте" },
+        "as": { trans: "/æz/", ru: "как" },
+        "internal": { trans: "/ɪnˈtɜːrnəl/", ru: "внутренний" },
+        "aging": { trans: "/ˈeɪdʒɪŋ/", ru: "старения" },
+        "thermostat": { trans: "/ˈθɜːrməstæt/", ru: "термостат" },
+        "mostly": { trans: "/ˈmoʊstli/", ru: "в основном" },
+        "produced": { trans: "/prəˈdjuːst/", ru: "производимый" },
+        "kidneys": { trans: "/ˈkɪdniːz/", ru: "почками" },
+        "brain": { trans: "/breɪn/", ru: "мозгом" },
+        "acts": { trans: "/æks/", ru: "действует" },
+        "guardian": { trans: "/ˈɡɑːrdiən/", ru: "защитник" },
+        "molecule": { trans: "/ˈmɑːlɪkjuːl/", ru: "молекула" },
+        "protecting": { trans: "/prəˈtektɪŋ/", ru: "защищая" },
+        "neurons": { trans: "/ˈnʊrɑːnz/", ru: "нейроны" },
+        "reducing": { trans: "/rɪˈduːsɪŋ/", ru: "снижая" },
+        "inflammation": { trans: "/ˌɪnfləˈmeɪʃn/", ru: "воспаление" },
+        "regulating": { trans: "/ˈreɡjəleɪtɪŋ/", ru: "регулируя" },
+        "mineral": { trans: "/ˈmɪnərəl/", ru: "минеральный" },
+        "balance": { trans: "/ˈbæləns/", ru: "баланс" },
+        "crucial": { trans: "/ˈkruːʃl/", ru: "важный" },
+        "for": { trans: "/fɔːr/", ru: "для" },
+        "longevity": { trans: "/ˌlɒŋˈdʒevəti/", ru: "долголетия" },
+        "higher": { trans: "/ˈhaɪər/", ru: "более высокие" },
+        "levels": { trans: "/ˈlevəlz/", ru: "уровни" },
+        "linked": { trans: "/lɪŋkt/", ru: "связаны" },
+        "to": { trans: "/tuː/", ru: "с" },
+        "sharper": { trans: "/ˈʃɑːrpər/", ru: "более четкая" },
+        "memory": { trans: "/ˈmeməri/", ru: "память" },
+        "better": { trans: "/ˈbetər/", ru: "лучшая" },
+        "cardiovascular": { trans: "/ˌkɑːrdioʊˈvæskjələr/", ru: "сердечно-сосудистая" },
+        "resilience": { trans: "/rɪˈzɪliəns/", ru: "устойчивость" },
+        "slower": { trans: "/ˈsloʊər/", ru: "более медленное" },
+        "biological": { trans: "/ˌbaɪəˈlɑːdʒɪkəl/", ru: "биологическое" },
+        "decline": { trans: "/dɪˈklaɪn/", ru: "снижение" },
+        "beauty": { trans: "/ˈbiːti/", ru: "прелесть" },
+        "you": { trans: "/juː/", ru: "вам" },
+        "don't": { trans: "/ˈdoʊnt/", ru: "не нужно" },
+        "need": { trans: "/niːd/", ru: "нужно" },
+        "laboratory": { trans: "/ˈlæbrətɔːri/", ru: "лаборатория" },
+        "boost": { trans: "/buːst/", ru: "повысить" },
+        "regular": { trans: "/ˈreɡjələr/", ru: "регулярные" },
+        "emotional": { trans: "/ɪˈmoʊʃənl/", ru: "эмоциональная" },
+        "connection": { trans: "/kəˈnekʃn/", ru: "связь" },
+        "stress": { trans: "/stres/", ru: "снижение стресса" },
+        "reduction": { trans: "/rɪˈdʌkʃn/", ru: "снижение" },
+        "outcomes": { trans: "/ˈaʊtkʌmz/", ru: "результаты" },
+        "living": { trans: "/ˈlɪvɪŋ/", ru: "проживания" },
+        "with": { trans: "/wɪð/", ru: "с" },
+        "help": { trans: "/help/", ru: "помогают" },
+        "sustain": { trans: "/səˈsteɪn/", ru: "поддерживать" },
+        "far": { trans: "/fɑːr/", ru: "гораздо" },
+        "more": { trans: "/mɔːr/", ru: "эффективнее" },
+        "effectively": { trans: "/ɪˈfektɪvli/", ru: "эффективнее" },
+        "than": { trans: "/ðæn/", ru: "чем" },
+        "isolated": { trans: "/ˈaɪsəleɪtɪd/", ru: "изолированные" },
+        "interventions": { trans: "/ˌɪntərˈvenʃənz/", ru: "вмешательства" },
+        "lessons": { trans: "/ˈlesnɪz/", ru: "уроки" },
+        "from": { trans: "/frʌm/", ru: "от" },
+        "117-year-old": { trans: "/ˌwʌn hʌndrəd sevənˈtiːn jɪər ˈoʊld/", ru: "117-летней" },
+        "life": { trans: "/laɪf/", ru: "жизни" },
+        "recently": { trans: "/ˈriːsəntli/", ru: "недавно" },
+        "maria": { trans: "/məˈriːə/", ru: "Мария" },
+        "branyas": { trans: "/ˈbrænɪəs/", ru: "Браняс" },
+        "one": { trans: "/wʌn/", ru: "одна из" },
+        "longest-lived": { trans: "/ˌlɒŋɡɪst ˈlɪvd/", ru: "самых долгоживущих" },
+        "women": { trans: "/ˈwʊmən/", ru: "женщин" },
+        "ever": { trans: "/ˈevər/", ru: "когда-либо" },
+        "recorded": { trans: "/rɪˈkɔːrdɪd/", ru: "записанных" },
+        "passed": { trans: "/pæst/", ru: "скончалась" },
+        "away": { trans: "/əˈweɪ/", ru: "в" },
+        "spain": { trans: "/speɪn/", ru: "Испании" },
+        "at": { trans: "/æt/", ru: "в" },
+        "117": { trans: "/wʌn hʌndrəd sevənˈtiːn/", ru: "117 лет" },
+        "researchers": { trans: "/rɪˈsɜːrtʃərz/", ru: "исследователи" },
+        "analyzed": { trans: "/ˈænəlaɪzd/", ru: "проанализировали" },
+        "her": { trans: "/hɜːr/", ru: "ее" },
+        "gut": { trans: "/ɡʌt/", ru: "кишечная" },
+        "microbiota": { trans: "/ˌmaɪkroʊbaɪˈoʊtə/", ru: "микробиота" },
+        "were": { trans: "/wɜːr/", ru: "были" },
+        "astonished": { trans: "/əˈstɒnɪʃt/", ru: "поражены" },
+        "to": { trans: "/tuː/", ru: "тем, что" },
+        "find": { trans: "/faɪnd/", ru: "обнаружили" },
+        "it": { trans: "/ɪt/", ru: "она" },
+        "resembled": { trans: "/rɪˈzemblɪd/", ru: "напоминала" },
+        "that": { trans: "/ðæt/", ru: "ту" },
+        "of": { trans: "/əv/", ru: "кого-то" },
+        "someone": { trans: "/ˈsʌmwaʊn/", ru: "кого-то" },
+        "decades": { trans: "/ˈdeɪkədz/", ru: "десятилетия" },
+        "younger": { trans: "/ˈjʌŋɡər/", ru: "молодее" },
+        "lifestyle": { trans: "/ˈlaɪfstaɪl/", ru: "образ жизни" },
+        "was": { trans: "/wʌz/", ru: "был" },
+        "simple": { trans: "/ˈsɪmpl/", ru: "простым" },
+        "she": { trans: "/ʃiː/", ru: "она" },
+        "stayed": { trans: "/steɪd/", ru: "оставалась" },
+        "calm": { trans: "/kɑːlm/", ru: "спокойной" },
+        "maintained": { trans: "/meɪnˈteɪnd/", ru: "сохраняла" },
+        "emotional": { trans: "/ɪˈmoʊʃənl/", ru: "эмоциональные" },
+        "bonds": { trans: "/bɑːndz/", ru: "связи" },
+        "throughout": { trans: "/θruːˈaʊt/", ru: "в течение всей" },
+        "her": { trans: "/hɜːr/", ru: "ее" },
+        "life": { trans: "/laɪf/", ru: "жизни" },
+        "always": { trans: "/ˈɔːlweɪz/", ru: "всегда" },
+        "had": { trans: "/hæd/", ru: "имела" },
+        "dogs": { trans: "/dɔːɡz/", ru: "собак" },
+        "her": { trans: "/hɜːr/", ru: "ее" },
+        "longevity": { trans: "/ˌlɒŋˈdʒevəti/", ru: "долголетие" },
+        "was": { trans: "/wʌz/", ru: "не было построено на" },
+        "built": { trans: "/bɪlt/", ru: "построено на" },
+        "radical": { trans: "/ˈrædɪkəl/", ru: "радикальных" },
+        "diets": { trans: "/ˈdaɪəts/", ru: "диетах" },
+        "or": { trans: "/ɔːr/", ru: "или" },
+        "futuristic": { trans: "/fjuːˈtʃʊrɪstɪk/", ru: "футуристических" },
+        "therapies": { trans: "/ˈθerəpiːz/", ru: "терапиях" },
+        "it": { trans: "/ɪt/", ru: "а" },
+        "was": { trans: "/wʌz/", ru: "было построено на" },
+        "routine": { trans: "/ruːˈtiːn/", ru: "режиме" },
+        "connection": { trans: "/kəˈnekʃn/", ru: "связи" },
+        "gentle": { trans: "/ˈdʒentl/", ru: "ненавязчивой" },
+        "constancy": { trans: "/ˈkɑːnstənsi/", ru: "постоянстве" },
+        "if": { trans: "/ɪf/", ru: "если" },
+        "simple": { trans: "/ˈsɪmpl/", ru: "простой" },
+        "ritual": { trans: "/ˈrɪtʃuəl/", ru: "ритуал" },
+        "can": { trans: "/kæn/", ru: "может" },
+        "preserve": { trans: "/prɪˈzɜːrv/", ru: "сохранить" },
+        "life": { trans: "/laɪf/", ru: "жизнь" },
+        "imagine": { trans: "/ɪˈmædʒɪn/", ru: "представьте" },
+        "living": { trans: "/ˈlɪvɪŋ/", ru: "живую" },
+        "bond": { trans: "/bɑːnd/", ru: "связь" },
+        "story": { trans: "/ˈstɔːri/", ru: "история" },
+        "reminds": { trans: "/rɪˈmaɪndz/", ru: "напоминает" },
+        "us": { trans: "/ʌs/", ru: "нам" },
+        "that": { trans: "/ðæt/", ru: "что" },
+        "is": { trans: "/ɪz/", ru: "не только" },
+        "biochemical": { trans: "/ˌbaɪoʊˈkemɪkəl/", ru: "биохимическое" },
+        "emotional": { trans: "/ɪˈmoʊʃənl/", ru: "эмоциональное" },
+        "humans": { trans: "/ˈhjuːmənz/", ru: "люди" },
+        "may": { trans: "/meɪ/", ru: "не только" },
+        "age": { trans: "/eɪdʒ/", ru: "стареют" },
+        "because": { trans: "/bɪˈkɔːz/", ru: "потому что" },
+        "bodies": { trans: "/ˈbɑːdiz/", ru: "тела" },
+        "fail": { trans: "/feɪl/", ru: "отказывают" },
+        "hearts": { trans: "/hɑːrts/", ru: "сердца" },
+        "dim": { trans: "/dɪm/", ru: "тускнеют" },
+        "something": { trans: "/ˈsʌmθɪŋ/", ru: "такое тонкое" },
+        "subtle": { trans: "/ˈsʌtl/", ru: "тонкое" },
+        "as": { trans: "/æz/", ru: "как" },
+        "daily": { trans: "/ˈdeɪli/", ru: "ежедневная" },
+        "habit": { trans: "/ˈhæbɪt/", ru: "привычка" },
+        "can": { trans: "/kæn/", ru: "может" },
+        "help": { trans: "/help/", ru: "помочь" },
+        "preserve": { trans: "/prɪˈzɜːrv/", ru: "сохранить" },
+        "biological": { trans: "/ˌbaɪəˈlɑːdʒɪkəl/", ru: "биологическую" },
+        "youth": { trans: "/juːθ/", ru: "молодость" },
+        "what": { trans: "/wʌt/", ru: "что" },
+        "could": { trans: "/kʊd/", ru: "может" },
+        "loyal": { trans: "/ˈlɔɪəl/", ru: "верный" },
+        "breathing": { trans: "/ˈbriːðɪŋ/", ru: "дышащий" },
+        "presence": { trans: "/ˈprezəns/", ru: "присутствие" },
+        "greets": { trans: "/ɡriːts/", ru: "встречает" },
+        "you": { trans: "/juː/", ru: "вас" },
+        "every": { trans: "/ˈevri/", ru: "каждое" },
+        "morning": { trans: "/ˈmɔːrnɪŋ/", ru: "утро" },
+        "waits": { trans: "/weɪts/", ru: "ожидает" },
+        "for": { trans: "/fɔːr/", ru: "вас" },
+        "night": { trans: "/naɪt/", ru: "ночью" },
+        "do": { trans: "/duː/", ru: "сделать" },
+        "human": { trans: "/ˈhjuːmən/", ru: "человеческим" },
+        "spirit": { trans: "/ˈspɪrɪt/", ru: "духом" },
+        "aging": { trans: "/ˈeɪdʒɪŋ/", ru: "старение" },
+        "not": { trans: "/nɑːt/", ru: "не только" },
+        "biological": { trans: "/ˌbaɪəˈlɑːdʒɪkəl/", ru: "биологический" },
+        "relational": { trans: "/rɪˈleɪʃənl/", ru: "отношения" },
+        "science": { trans: "/ˈsaɪəns/", ru: "наука" },
+        "racing": { trans: "/ˈreɪsɪŋ/", ru: "стремительно" },
+        "ahead": { trans: "/əˈhed/", ru: "вперед" },
+        "sirtuin": { trans: "/ˈsɜːrtuːɪn/", ru: "сиртуин" },
+        "activators": { trans: "/ˈæktɪveɪtərz/", ru: "активаторы" },
+        "NAD+": { trans: "/ˌen eɪ ˈdiː plʌs/", ru: "NAD+" },
+        "boosters": { trans: "/ˈbuːstərz/", ru: "усилители" },
+        "mTOR": { trans: "/ˌem tiː ˈoʊ ɑːr/", ru: "mTOR" },
+        "regulators": { trans: "/ˈreɡjəleɪtərz/", ru: "регуляторы" },
+        "hold": { trans: "/hoʊld/", ru: "имеют" },
+        "real": { trans: "/ˈriːəl/", ru: "реальную" },
+        "promise": { trans: "/ˈprɒmɪs/", ru: "перспективу" },
+        "none": { trans: "/nʌn/", ru: "ни одно из них" },
+        "of": { trans: "/əv/", ru: "из них" },
+        "them": { trans: "/ðem/", ru: "их" },
+        "can": { trans: "/kæn/", ru: "не может" },
+        "walk": { trans: "/wɔːk/", ru: "идти" },
+        "beside": { trans: "/bɪˈsaɪd/", ru: "рядом" },
+        "on": { trans: "/ɑːn/", ru: "в" },
+        "difficult": { trans: "/ˈdɪfɪkəlt/", ru: "трудные" },
+        "mornings": { trans: "/ˈmɔːrnɪŋz/", ru: "утры" },
+        "listen": { trans: "/ˈlɪsn/", ru: "выслушать" },
+        "when": { trans: "/wen/", ru: "когда" },
+        "silence": { trans: "/ˈsaɪləns/", ru: "тишина" },
+        "feels": { trans: "/fiːlz/", ru: "кажется" },
+        "heavy": { trans: "/ˈhevi/", ru: "тягостной" },
+        "give": { trans: "/ɡɪv/", ru: "дать" },
+        "purpose": { trans: "/ˈpɜːrpəs/", ru: "цель" },
+        "world": { trans: "/wɜːrld/", ru: "мир" },
+        "stops": { trans: "/stɒps/", ru: "останавливает" },
+        "calling": { trans: "/ˈkɔːlɪŋ/", ru: "зов" },
+        "perhaps": { trans: "/ˈpɑːrhæps/", ru: "возможно" },
+        "most": { trans: "/moʊst/", ru: "самым" },
+        "powerful": { trans: "/ˈpaʊərfəl/", ru: "мощным" },
+        "drug": { trans: "/drʌɡ/", ru: "лекарством" },
+        "doesn't": { trans: "/ˈdʌznt/", ru: "не является" },
+        "come": { trans: "/kʌm/", ru: "приходит" },
+        "from": { trans: "/frʌm/", ru: "из" },
+        "lab": { trans: "/læb/", ru: "лаборатории" },
+        "arrives": { trans: "/əˈraɪvz/", ru: "приходит" },
+        "four": { trans: "/fɔːr/", ru: "четырех" },
+        "final": { trans: "/ˈfaɪnl/", ru: "последняя" },
+        "thought": { trans: "/θɔːt/", ru: "мысль" },
+        "you": { trans: "/juː/", ru: "вы" },
+        "are": { trans: "/ɑːr/", ru: "входите" },
+        "entering": { trans: "/ˈentərɪŋ/", ru: "входите" },
+        "your": { trans: "/jʊr/", ru: "ваш" },
+        "60s": { trans: "/ˈsɪkstiz/", ru: "60-е" },
+        "consider": { trans: "/kənˈsɪdər/", ru: "рассмотрите" },
+        "adopting": { trans: "/əˈdɑːptɪŋ/", ru: "принятие" },
+        "companion": { trans: "/kəmˈpænjən/", ru: "компаньона" },
+        "as": { trans: "/æz/", ru: "не как" },
+        "charity": { trans: "/ˈtʃærəti/", ru: "благотворительность" },
+        "preventative": { trans: "/prɪˈventətɪv/", ru: "профилактическое" },
+        "medicine": { trans: "/ˈmedɪsən/", ru: "лекарство" },
+        "younger": { trans: "/ˈjʌŋɡər/", ru: "молодые" },
+        "offer": { trans: "/ˈɔːfər/", ru: "предложите" },
+        "time": { trans: "/taɪm/", ru: "время" },
+        "with": { trans: "/wɪð/", ru: "с" },
+        "animal": { trans: "/ˈænɪməl/", ru: "животным" },
+        "someone": { trans: "/ˈsʌmwaʊn/", ru: "кому-то" },
+        "who": { trans: "/huː/", ru: "кто" },
+        "may": { trans: "/meɪ/", ru: "может" },
+        "need": { trans: "/niːd/", ru: "нуждаться" },
+        "more": { trans: "/mɔːr/", ru: "больше" },
+        "than": { trans: "/ðæn/", ru: "чем" },
+        "conversation": { trans: "/ˌkɑːnvərˈseɪʃn/", ru: "беседа" },
+        "because": { trans: "/bɪˈkɔːz/", ru: "потому что" },
+        "one": { trans: "/wʌn/", ru: "однажды" },
+        "day": { trans: "/deɪ/", ru: "день" },
+        "science": { trans: "/ˈsaɪəns/", ru: "наука" },
+        "may": { trans: "/meɪ/", ru: "может" },
+        "confirm": { trans: "/kənˈfɜːrm/", ru: "подтвердить" },
+        "love": { trans: "/lʌv/", ru: "любовь" },
+        "already": { trans: "/ˈɔːlrɛdi/", ru: "уже" },
+        "knows": { trans: "/noʊz/", ru: "знает" },
+        "heart": { trans: "/hɑːrt/", ru: "сердце" },
+        "keeps": { trans: "/kiːps/", ru: "сохраняет" },
+        "brain": { trans: "/breɪn/", ru: "мозг" },
+        "alive": { trans: "/əˈlaɪv/", ru: "живым" },
+        "longer": { trans: "/ˈlɔːŋɡər/", ru: "дольше" },
+        "any": { trans: "/ˈeni/", ru: "любой" },
+        "molecule": { trans: "/ˈmɑːlɪkjuːl/", ru: "молекула" },
+        "ever": { trans: "/ˈevər/", ru: "когда-либо" },
+        "will": { trans: "/wɪl/", ru: "сможет" }
+    };
+
+    // Article paragraphs
+    const paragraphs = [
+        "We tend to imagine aging as something that begins at 70. But science keeps reminding us: cognitive decline starts in our 30s. Tiny changes, in memory, mental speed, decision-making, begin long before we notice them. By the time forgetfulness becomes visible, the process has already been unfolding silently for decades.",
+        "So the real question is not \"How do we fix aging when it arrives?\" It's \"How do we preserve vitality before it slips away?\"",
+        "And that is where one of the simplest, and most overlooked, interventions comes in:",
+        "Companionship.",
+        "Not prescribed in pills.",
+        "But in paws.",
+        "The Science is Clear: Pets Slow Cognitive Decline",
+        "In one of the largest studies to date, 7,945 adults over 50 were tracked for memory and mental performance over time.",
+        "Those who lived with a dog or a cat lost cognitive abilities significantly more slowly than those who didn't.",
+        "The effect was strongest in older adults living alone, the ones most at risk of loneliness and neurodegeneration.",
+        "What improved most?",
+        "- Verbal fluency — speaking with speed and richness",
+        "- Immediate recall — remembering right after learning",
+        "- Delayed recall — holding memory over time",
+        "Birds and fish did not produce the same effect.",
+        "It wasn't just having an animal nearby. It was emotional connection, responsibility, routine, reciprocity.",
+        "The Biology Behind the Bond",
+        "Why does sharing your life with a dog or cat act almost like a mild form of daily neurotherapy?",
+        "Science suggests three major longevity levers at play:",
+        "LONGEVITY FACTOR | HOW PETS INFLUENCE IT",
+        "Movement & Cardiovascular Health | Daily walks, playtime, light activity, even low-intensity movement activates mTOR pathways linked to cellular repair.",
+        "Stress Regulation & Hormones | Petting a dog lowers cortisol, the chronic stress hormone that accelerates inflammation. Less cortisol means more circulating Klotho, the body's natural \"anti-aging shield.\"",
+        "Microbiota & Immunity | Living with animals exposes us to diverse microbes, leading to more resilient gut flora, a key factor in immune regulation and NAD+ production, both essential for healthy aging.",
+        "A Quick Primer: What is Klotho?",
+        "Think of Klotho as the body's internal aging thermostat. Mostly produced in the kidneys and brain, it acts like a guardian molecule, protecting neurons, reducing inflammation, and regulating mineral balance, all crucial for longevity.",
+        "Higher Klotho levels are linked to:",
+        "- Sharper memory",
+        "- Better cardiovascular resilience",
+        "- Slower biological decline",
+        "And here's the beauty: you don't need a laboratory to boost it. Regular movement, emotional connection, and stress reduction, all natural outcomes of living with a pet, help sustain Klotho levels far more effectively than isolated interventions.",
+        "Lessons From a 117-Year-Old Life",
+        "Recently, Maria Branyas, one of the longest-lived women ever recorded, passed away in Spain at 117.",
+        "Researchers analyzed her gut microbiota and were astonished to find it resembled that of someone decades younger.",
+        "Her lifestyle was simple.",
+        "She stayed calm.",
+        "She maintained emotional bonds.",
+        "And throughout her life, she always had dogs.",
+        "Her longevity was not built on radical diets or futuristic therapies.",
+        "It was built on routine, connection, and gentle constancy.",
+        "If a Simple Ritual Can Preserve Life...",
+        "Imagine a Living Bond",
+        "Maria's story reminds us that longevity is not only biochemical, it is emotional.",
+        "Humans may not just age because bodies fail, but because hearts dim.",
+        "If something as subtle as a daily habit can help preserve biological youth...",
+        "What could a loyal, breathing presence, that greets you every morning and waits for you every night, do for the human spirit?",
+        "Aging Is Not Just Biological. It's Relational.",
+        "Yes, science is racing ahead with Sirtuin activators, NAD+ boosters and mTOR regulators.",
+        "They hold real promise.",
+        "But none of them can:",
+        "- Walk beside you on difficult mornings",
+        "- Listen when silence feels heavy",
+        "- Give you purpose when the world stops calling",
+        "Perhaps the most powerful longevity drug doesn't come from a lab. Perhaps it arrives on four legs.",
+        "Final Thought",
+        "If you are entering your 60s...",
+        "Consider adopting a companion not as charity, but as preventative medicine.",
+        "If you are younger...",
+        "Offer time with an animal to someone who may need more than conversation. Because one day, science may confirm what love already knows:",
+        "The heart keeps the brain alive longer than any molecule ever will."
+    ];
+
+    // Russian translation paragraphs
+    const russianParagraphs = [
+        "Мы склонны представлять старение как нечто, что начинается в 70 лет. Но наука постоянно напоминает нам: когнитивное снижение начинается в 30+. Незначительные изменения в памяти, умственной скорости, принятии решений начинаются задолго до того, как мы их замечаем. К тому времени, когда забывчивость становится заметной, этот процесс уже протекает незаметно в течение десятилетий.",
+        "Так что настоящий вопрос не в том, как исправить старение, когда оно наступает? А в том, как сохранить жизненные силы до того, как они навсегда исчезнут?",
+        "И вот здесь вступает в игру одно из самых простых и наиболее забытых вмешательств:",
+        "Товарищество.",
+        "Не назначаемое в таблетках.",
+        "А в лапах.",
+        "Наука ясна: домашние животные замедляют когнитивное снижение",
+        "В одном из крупнейших исследований на сегодняшний день 7 945 взрослых старше 50 лет отслеживались в отношении памяти и умственных способностей в течение времени.",
+        "Те, кто жил с собакой или кошкой, теряли когнитивные способности значительно медленнее, чем те, кто не жил с животными.",
+        "Эффект был самым сильным у пожилых взрослых, живущих в одиночестве, тех, кто наиболее подвержен риску одиночества и нейродегенерации.",
+        "Что улучшилось больше всего?",
+        "- Вербальная беглость — речь со скоростью и богатством",
+        "- Мгновенное воспоминание — запоминание сразу после обучения",
+        "- Отсроченное воспоминание — сохранение памяти в течение времени",
+        "Птицы и рыбы не создавали того же эффекта.",
+        "Дело было не просто в наличии животного рядом. Это была эмоциональная связь, ответственность, режим, взаимность.",
+        "Биология, стоящая за связью",
+        "Почему разделение жизни с собакой или кошкой действует почти как мягкая форма ежедневной нейротерапии?",
+        "Наука предполагает три основных рычага долголетия в действии:",
+        "ФАКТОР ДОЛГОЛЕТИЯ | КАК ДОМАШНИЕ ЖИВОТНЫЕ ВЛИЯЮТ НА НЕГО",
+        "Движение и сердечно-сосудистое здоровье | Ежедневные прогулки, время игры, легкая активность, даже движение низкой интенсивности активирует пути mTOR, связанные с клеточным ремонтом.",
+        "Регуляция стресса и гормоны | Поглаживание собаки снижает уровень кортизола, гормона хронического стресса, ускоряющего воспаление. Меньше кортизола означает больше циркулирующего клото, естественного \"анти-возрастного щита\" организма.",
+        "Микробиота и иммунитет | Жизнь с животными подвергает нас воздействию разнообразных микробов, что приводит к более устойчивой кишечной микрофлоре, ключевому фактору в регуляции иммунитета и производстве NAD+, оба необходимых для здорового старения.",
+        "Краткое введение: что такое клото?",
+        "Представьте клото как внутренний термостат старения организма. В основном производится в почках и мозге, действует как молекула-защитник, защищающая нейроны, уменьшающая воспаление и регулирующая минеральный баланс, все это имеет решающее значение для долголетия.",
+        "Более высокие уровни клото связаны с:",
+        "- Более четкой памятью",
+        "- Лучшей сердечно-сосудистой устойчивостью",
+        "- Более медленным биологическим снижением",
+        "И вот в чем прелесть: вам не нужна лаборатория, чтобы повысить его уровень. Регулярные движения, эмоциональная связь и снижение стресса, все естественные результаты жизни с животным, помогают поддерживать уровни клото гораздо более эффективно, чем изолированные вмешательства.",
+        "Уроки 117-летней жизни",
+        "Недавно Мария Браняс, одна из самых долгоживущих женщин, когда-либо записанных, скончалась в Испании в возрасте 117 лет.",
+        "Исследователи проанализировали ее кишечную микробиоту и были поражены, обнаружив, что она напоминает микробиоту кого-то, кто на десятилетия моложе.",
+        "Ее образ жизни был простым.",
+        "Она оставалась спокойной.",
+        "Она поддерживала эмоциональные связи.",
+        "И на протяжении всей своей жизни у нее всегда были собаки.",
+        "Ее долголетие не было построено на радикальных диетах или футуристических терапиях.",
+        "Оно было построено на режиме, связи и ненавязчивой постоянстве.",
+        "Если простой ритуал может сохранить жизнь...",
+        "Представьте живую связь",
+        "История Марии напоминает нам, что долголетие не только биохимическое, оно эмоциональное.",
+        "Люди могут стареть не только потому, что отказывают тела, но и потому, что тускнеют сердца.",
+        "Если что-то такое тонкое, как ежедневная привычка, может помочь сохранить биологическую молодость...",
+        "Что может сделать для человеческого духа верное, дышащее присутствие, которое встречает вас каждое утро и ждет вас каждую ночь?",
+        "Старение — это не только биологический процесс. Это отношения.",
+        "Да, наука стремительно продвигается вперед с активаторами сиртуинов, усилителями NAD+ и регуляторами mTOR.",
+        "Они имеют реальную перспективу.",
+        "Но ни одно из них не может:",
+        "- Идти рядом с вами в трудные утра",
+        "- Выслушать, когда тишина кажется тягостной",
+        "- Дать вам цель, когда мир перестает звать",
+        "Возможно, самое мощное лекарство от старения не приходит из лаборатории. Возможно, оно приходит на четырех ногах.",
+        "Последняя мысль",
+        "Если вы входите в возраст 60+...",
+        "Рассмотрите возможность принятия товарища не как благотворительность, а как профилактическое лекарство.",
+        "Если вы моложе...",
+        "Предложите время с животным тому, кому может понадобиться больше, чем разговор. Потому что однажды наука может подтвердить то, что любовь уже знает:",
+        "Сердце сохраняет мозг живым дольше, чем любая молекула когда-либо сможет."
+    ];
+
+    // Vocabulary phrases
+    const vocabItems = [
+        { en: "prescribed companionship", trans: "/prɪˈskraɪbd ˈkʌmpənɪʃɪp/", ru: "назначаемое товарищество", audio: "prescribed companionship" },
+        { en: "cognitive decline", trans: "/ˈkɒɡnɪtɪv dɪˈklaɪn/", ru: "когнитивное снижение", audio: "cognitive decline" },
+        { en: "verbal fluency", trans: "/ˈvɜːrbəl ˈfluːənsi/", ru: "вербальная беглость", audio: "verbal fluency" },
+        { en: "immediate recall", trans: "/ɪˈmiːdiət rɪˈkɔːl/", ru: "мгновенное воспоминание", audio: "immediate recall" },
+        { en: "delayed recall", trans: "/dɪˈleɪd rɪˈkɔːl/", ru: "отсроченное воспоминание", audio: "delayed recall" },
+        { en: "emotional connection", trans: "/ɪˈmoʊʃənl kəˈnekʃn/", ru: "эмоциональная связь", audio: "emotional connection" },
+        { en: "resilient gut flora", trans: "/rɪˈzɪliənt ɡʌt ˈflɔːrə/", ru: "устойчивая кишечная микрофлора", audio: "resilient gut flora" },
+        { en: "anti-aging shield", trans: "/ˌænti ˈeɪdʒɪŋ ʃiːld/", ru: "анти-возрастной щит", audio: "anti-aging shield" },
+        { en: "gentle constancy", trans: "/ˈdʒentl ˈkɑːnstənsi/", ru: "ненавязчивая постоянность", audio: "gentle constancy" },
+        { en: "preventative medicine", trans: "/prɪˈventətɪv ˈmedɪsən/", ru: "профилактическая медицина", audio: "preventative medicine" },
+        { en: "healthy aging", trans: "/ˈhelθi ˈeɪdʒɪŋ/", ru: "здоровое старение", audio: "healthy aging" },
+        { en: "biological youth", trans: "/ˌbaɪəˈlɑːdʒɪkəl juːθ/", ru: "биологическая молодость", audio: "biological youth" }
+    ];
+
+    // Matching exercise data - aging collocations with Russian translations
+    const matchingItems = [
+        { term: "healthy aging", ru_term: "здоровое старение" },
+        { term: "biological youth", ru_term: "биологическая молодость" },
+        { term: "social relationships", ru_term: "социальные отношения" },
+        { term: "cognitive decline", ru_term: "когнитивное снижение" },
+        { term: "longevity factors", ru_term: "факторы долголетия" },
+        { term: "mental performance", ru_term: "умственная работоспособность" },
+        { term: "stress regulation", ru_term: "регуляция стресса" },
+        { term: "emotional bonds", ru_term: "эмоциональные связи" },
+        { term: "loneliness epidemic", ru_term: "эпидемия одиночества" },
+        { term: "preventative medicine", ru_term: "профилактическая медицина" }
+    ];
+
+    // === POPULATE ENGLISH ARTICLE ===
+    const articleDiv = document.getElementById('article-text');
+    paragraphs.forEach(par => {
+        const p = document.createElement('p');
+        const words = par.split(/(\s+)/);
+        words.forEach(token => {
+            if (/\s/.test(token)) {
+                p.appendChild(document.createTextNode(token));
+            } else {
+                const clean = token.replace(/[.,!?;:()"‘'’–—\[\]]/g, "").toLowerCase();
+                const span = document.createElement('span');
+                span.className = 'word';
+                span.textContent = token;
+                span.onclick = (e) => handleWordClick(clean, token.replace(/[.,!?;:()"‘'’–—\[\]]/g, ""), e);
+                p.appendChild(span);
+            }
+        });
+        articleDiv.appendChild(p);
+    });
+
+    // === POPULATE RUSSIAN TRANSLATION ===
+    const russianDiv = document.getElementById('russian-translation');
+    russianParagraphs.forEach(par => {
+        const p = document.createElement('p');
+        p.textContent = par;
+        russianDiv.appendChild(p);
+    });
+
+    // === POPULATE VOCABULARY LIST ===
+    const vocabList = document.getElementById('vocab-list');
+    vocabItems.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'vocab-item';
+        li.innerHTML = `
+            <div class="vocab-text">
+                <span class="vocab-en">${item.en}</span>
+                <span class="vocab-trans">${item.trans}</span>
+                <span class="vocab-ru">${item.ru}</span>
+            </div>
+            <button class="play-btn" onclick="speakPhrase('${item.audio.replace(/'/g, "\\'")}')">🔊</button>
+        `;
+        vocabList.appendChild(li);
+    });
+
+    // === POPULATE MATCHING EXERCISE ===
+    const termsContainer = document.getElementById('terms-container');
+    const definitionsContainer = document.getElementById('definitions-container');
+    
+    // Shuffle the Russian translations to make it a matching exercise
+    const shuffledRussian = [...matchingItems].sort(() => 0.5 - Math.random());
+    
+    // Create terms table rows
+    matchingItems.forEach((item, index) => {
+        const termRow = document.createElement('tr');
+        termRow.innerHTML = `
+            <td>
+                <div class="matching-item" draggable="true" data-index="${index}" data-correct="${index}">
+                    ${item.term}
+                </div>
+            </td>
+        `;
+        termsContainer.appendChild(termRow);
+    });
+    
+    // Create definitions table rows with shuffled Russian translations
+    shuffledRussian.forEach((item, index) => {
+        const defRow = document.createElement('tr');
+        defRow.innerHTML = `
+            <td>
+                <div class="drop-zone" data-index="${index}" data-correct="${matchingItems.findIndex(i => i.ru_term === item.ru_term)}">
+                    ${item.ru_term}
+                </div>
+            </td>
+        `;
+        definitionsContainer.appendChild(defRow);
+    });
+
+    // === WORD CLICK HANDLER ===
+    let popupTimeout;
+    function handleWordClick(clean, display, event) {
+        clearTimeout(popupTimeout);
+        speak(display);
+
+        const popup = document.getElementById('word-popup');
+        const pWord = document.getElementById('popup-word');
+        const pTrans = document.getElementById('popup-trans');
+        const pTranslat = document.getElementById('popup-translation');
+
+        pWord.textContent = display;
+        const entry = dictionary[clean] || dictionary[display.toLowerCase()] || { trans: "/?/", ru: "перевод недоступен" };
+        
+        pTrans.textContent = entry.trans;
+        pTrans.style.display = "block";
+        pTranslat.textContent = entry.ru;
+        pTranslat.className = "translation";
+
+        popup.style.display = 'block';
+        popupTimeout = setTimeout(() => { popup.style.display = 'none'; }, 4000);
+    }
+
+    // === SPEECH FUNCTIONS ===
+    function speak(text) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'en-US';
+            utter.rate = 0.9;
+            speechSynthesis.speak(utter);
+        }
+    }
+
+    function speakPhrase(phrase) {
+        speak(phrase);
+    }
+
+    // Expose speakPhrase globally for inline onclick
+    window.speakPhrase = speakPhrase;
+
+    // === MATCHING EXERCISE LOGIC ===
+    let draggedItem = null;
+    let matchedPairs = {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const items = document.querySelectorAll('.matching-item');
+        const dropZones = document.querySelectorAll('.drop-zone');
+        
+        items.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                draggedItem = item;
+                item.classList.add('dragging');
+                setTimeout(() => {
+                    item.style.display = 'none';
+                }, 0);
+            });
+            
+            item.addEventListener('dragend', () => {
+                setTimeout(() => {
+                    if (draggedItem) {
+                        draggedItem.style.display = 'block';
+                        draggedItem.classList.remove('dragging');
+                    }
+                    draggedItem = null;
+                }, 0);
+            });
+        });
+        
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+            
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+            
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                
+                if (draggedItem) {
+                    const itemIndex = draggedItem.dataset.index;
+                    const zoneIndex = zone.dataset.index;
+                    const correctIndex = parseInt(zone.dataset.correct);
+                    
+                    // Check if this is already matched
+                    if (matchedPairs[itemIndex] !== undefined) {
+                        // Remove previous match
+                        const prevZone = document.querySelector(`.drop-zone[data-index="${matchedPairs[itemIndex]}"]`);
+                        if (prevZone) {
+                            prevZone.classList.remove('correct', 'incorrect');
+                        }
+                    }
+                    
+                    // Create new match
+                    zone.innerHTML = '';
+                    zone.appendChild(draggedItem);
+                    matchedPairs[itemIndex] = zoneIndex;
+                    
+                    // Add Russian translation to the item
+                    const ruSpan = document.createElement('span');
+                    ruSpan.style.display = 'block';
+                    ruSpan.style.fontSize = '0.85rem';
+                    ruSpan.style.color = '#666';
+                    ruSpan.style.marginTop = '5px';
+                    ruSpan.textContent = zone.textContent;
+                    draggedItem.appendChild(ruSpan);
+                    
+                    // Check if the match is correct
+                    if (parseInt(itemIndex) === correctIndex) {
+                        zone.classList.add('correct');
+                    } else {
+                        zone.classList.add('incorrect');
+                    }
+                    
+                    // Return the item to the terms container
+                    draggedItem.style.display = 'block';
+                    draggedItem = null;
+                }
+            });
+        });
+        
+        // Check answers button
+        document.getElementById('check-btn').addEventListener('click', () => {
+            let correctCount = 0;
+            const totalPairs = matchingItems.length;
+            
+            // Check all matched pairs
+            Object.keys(matchedPairs).forEach(itemIndex => {
+                const zoneIndex = matchedPairs[itemIndex];
+                const zone = document.querySelector(`.drop-zone[data-index="${zoneIndex}"]`);
+                const correctIndex = parseInt(zone.dataset.correct);
+                
+                if (parseInt(itemIndex) === correctIndex) {
+                    correctCount++;
+                }
+            });
+            
+            // Update UI for correct/incorrect matches
+            Object.keys(matchedPairs).forEach(itemIndex => {
+                const zoneIndex = matchedPairs[itemIndex];
+                const zone = document.querySelector(`.drop-zone[data-index="${zoneIndex}"]`);
+                
+                if (zone) {
+                    const correctIndex = parseInt(zone.dataset.correct);
+                    if (parseInt(itemIndex) === correctIndex) {
+                        zone.classList.add('correct');
+                        zone.classList.remove('incorrect');
+                    } else {
+                        zone.classList.add('incorrect');
+                        zone.classList.remove('correct');
+                    }
+                }
+            });
+            
+            // Display score
+            const scoreEl = document.getElementById('score');
+            scoreEl.textContent = `You got ${correctCount} out of ${totalPairs} correct.`;
+            scoreEl.style.color = correctCount === totalPairs ? '#28a745' : '#dc3545';
+            
+            if (correctCount === totalPairs) {
+                scoreEl.textContent += ' Excellent job!';
+            } else {
+                scoreEl.textContent += ' Try again!';
+            }
+        });
+        
+        // Reset button
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            // Clear all matched pairs
+            matchedPairs = {};
+            
+            // Reset all drop zones
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.remove('correct', 'incorrect');
+                zone.innerHTML = '';
+            });
+            
+            // Reset all terms
+            document.querySelectorAll('.matching-item').forEach(item => {
+                item.style.display = 'block';
+                item.querySelector('span')?.remove();
+            });
+            
+            // Return all items to the terms container
+            const termsContainer = document.getElementById('terms-container');
+            matchingItems.forEach((item, index) => {
+                const termRow = document.createElement('tr');
+                const termCell = document.createElement('td');
+                const termDiv = document.createElement('div');
+                
+                termDiv.className = 'matching-item';
+                termDiv.draggable = true;
+                termDiv.dataset.index = index;
+                termDiv.dataset.correct = index;
+                termDiv.textContent = item.term;
+                
+                termCell.appendChild(termDiv);
+                termRow.appendChild(termCell);
+                termsContainer.appendChild(termRow);
+            });
+            
+            // Reset score display
+            document.getElementById('score').textContent = '';
+        });
+    });
+</script>
+
+</body>
+</html>
