@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stay Strong as You Age | Interactive Health Reading</title>
+<style>
+:root {
+  --ink:#1f2428; --muted:#657078; --paper:#fffdfb; --canvas:#f6f4f1; --line:#e6dfd8;
+  --red:#a8273c; --red-dark:#741429; --rose:#f8e4e7; --navy:#173d5f; --navy-soft:#edf4f8;
+  --gold:#c78430; --shadow:0 15px 36px rgba(33,31,29,.09);
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; color:var(--ink); background:var(--canvas); font-family:Arial, Helvetica, sans-serif; line-height:1.6; }
+button { font:inherit; }
+.page { width:min(1160px, calc(100% - 30px)); margin:0 auto; padding:24px 0 64px; }
+.topline { display:flex; justify-content:space-between; gap:16px; border-top:2px solid #2e363d; padding-top:12px; color:var(--muted); font-size:.76rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase; }
+.topline strong { color:var(--red); }
+.hero { margin:20px 0 30px; background:var(--paper); border:1px solid var(--line); box-shadow:var(--shadow); padding:clamp(26px,5vw,56px); position:relative; overflow:hidden; }
+.hero::after { content:""; position:absolute; width:340px; height:340px; right:-166px; top:-150px; transform:rotate(45deg); background:var(--red); opacity:.95; }
+.hero-inner { position:relative; z-index:1; max-width:780px; }
+.eyebrow { color:var(--red); font-size:.76rem; letter-spacing:.13em; text-transform:uppercase; font-weight:800; }
+h1,h2,h3 { font-family:Georgia, 'Times New Roman', serif; line-height:1.1; }
+h1 { margin:.48rem 0 .85rem; max-width:760px; font-size:clamp(2.35rem,5.3vw,4.75rem); letter-spacing:-.055em; }
+h2 { margin:.4rem 0 1rem; font-size:clamp(2rem,4.2vw,3.2rem); letter-spacing:-.04em; }
+h3 { margin:0 0 .7rem; font-size:1.38rem; }
+.hero-text { max-width:680px; margin:0; color:var(--muted); font-size:1.08rem; }
+.hero-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+.tag { padding:6px 10px; border:1px solid #ebc6cd; border-radius:999px; background:#fff6f7; color:var(--red-dark); font-size:.77rem; font-weight:800; }
+.guide { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:0 0 30px; }
+.guide-card { background:var(--paper); border:1px solid var(--line); padding:20px; }
+.guide-card b { display:block; margin-bottom:4px; color:var(--navy); }
+.guide-card p { margin:0; color:var(--muted); font-size:.92rem; }
+.article-card { background:var(--paper); border:1px solid var(--line); box-shadow:var(--shadow); padding:clamp(20px,4vw,42px); }
+.article-meta { display:flex; flex-wrap:wrap; gap:8px; align-items:center; color:var(--muted); font-size:.84rem; margin-bottom:20px; }
+.article-meta span { border-left:2px solid var(--red); padding-left:9px; }
+.intro { max-width:890px; font-size:1.04rem; }
+p { margin:0 0 1rem; }
+.habits-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:16px; margin-top:28px; }
+.habit-card { grid-column:span 6; display:grid; grid-template-columns:52px 1fr; gap:16px; padding:22px; border:1px solid #ead8dc; background:linear-gradient(135deg,#fff 0%,#fff 74%,#fcecef 74%); }
+.habit-card:first-child { grid-column:span 12; }
+.habit-number { height:40px; width:40px; border-radius:50%; background:var(--red); color:#fff; display:grid; place-items:center; font-size:.85rem; font-weight:800; }
+.habit-content h3 { color:var(--red-dark); }
+.phrase { display:inline; padding:0 2px; color:var(--red-dark); border:0; border-radius:2px; background:linear-gradient(transparent 57%,#f5c4cc 57%); font-weight:700; cursor:pointer; line-height:inherit; text-align:left; }
+.phrase:hover,.phrase:focus { outline:2px solid rgba(168,39,60,.25); outline-offset:2px; background:#ffd8df; }
+.translation-inline { display:none; color:var(--red-dark); font-size:.84em; font-style:normal; font-weight:600; }
+.translation-inline::before { content:" ("; }
+.translation-inline::after { content:")"; }
+.show-translations .translation-inline { display:inline; }
+.controls { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; padding:15px; background:#faf7f4; border:1px solid var(--line); }
+.controls strong { align-self:center; margin-right:auto; }
+.action { border:1px solid #cec0ba; background:#fff; color:#463d3a; padding:8px 12px; cursor:pointer; font-weight:800; }
+.action.primary { background:var(--red); border-color:var(--red); color:#fff; }
+.action:hover,.action:focus { outline:2px solid rgba(168,39,60,.22); outline-offset:2px; }
+.glossary { display:none; margin-top:16px; background:var(--paper); border:1px solid var(--line); padding:22px; }
+.glossary.open { display:block; }
+.glossary p { color:var(--muted); font-size:.9rem; }
+.glossary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+.glossary-item { text-align:left; border:1px solid #eaded7; background:#faf7f4; padding:10px; cursor:pointer; }
+.glossary-item:hover,.glossary-item:focus { outline:2px solid rgba(168,39,60,.18); outline-offset:2px; background:#fff; }
+.glossary-en { display:block; color:var(--red-dark); font-weight:800; font-size:.88rem; }
+.glossary-ru { display:block; color:var(--muted); font-size:.78rem; margin-top:3px; }
+.article-two { margin-top:38px; background:var(--navy); color:#f1f7fa; box-shadow:var(--shadow); padding:clamp(26px,5vw,48px); position:relative; overflow:hidden; }
+.article-two::before { content:""; position:absolute; inset:auto -150px -160px auto; width:380px; height:380px; border:56px solid rgba(255,255,255,.08); border-radius:50%; }
+.article-two > * { position:relative; z-index:1; }
+.article-two .eyebrow { color:#f5c36c; }
+.article-two h2 { color:#fff; max-width:850px; }
+.source-note { max-width:860px; padding:15px 16px; border-left:3px solid #f5c36c; background:rgba(255,255,255,.08); font-size:.94rem; }
+.article-two .phrase { color:#fff5d9; background:linear-gradient(transparent 57%,rgba(245,195,108,.52) 57%); }
+.article-two .phrase:hover,.article-two .phrase:focus { background:#f5c36c; color:#173d5f; outline-color:rgba(245,195,108,.35); }
+.practice-list { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:22px; }
+.practice-block { display:grid; grid-template-columns:45px 1fr; gap:14px; padding:20px; border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.07); }
+.practice-block h3 { color:#fff; font-size:1.3rem; }
+.practice-visual { width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:#f5c36c; color:#173d5f; font-weight:900; }
+.illustrated-summary { margin-top:28px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.summary-card { padding:19px; color:var(--ink); background:#fffdfb; border-top:4px solid #f5c36c; }
+.summary-icon { font-size:1.8rem; margin-bottom:8px; }
+.summary-card h3 { margin-bottom:6px; font-size:1.18rem; color:var(--navy); }
+.summary-card p { margin:0; font-size:.92rem; color:#52606a; }
+.sources { margin-top:30px; background:#fffdfb; color:var(--ink); border:1px solid var(--line); padding:22px; }
+.sources h3 { margin-bottom:9px; }
+.sources ul { margin:0; padding-left:20px; }
+.sources a { color:var(--red-dark); font-weight:800; }
+.medical-note { margin-top:16px; color:#5e5a58; font-size:.86rem; }
+footer { color:var(--muted); font-size:.84rem; padding:22px 0 0; }
+.popover { position:fixed; display:none; z-index:20; width:min(310px,calc(100vw - 24px)); background:#271b1d; color:#fff; padding:13px; border-radius:9px; box-shadow:0 16px 40px rgba(0,0,0,.24); font-size:.9rem; }
+.popover.open { display:block; }
+.popover-title { display:block; color:#ffd5dc; font-weight:800; margin-bottom:4px; }
+.popover-ru { display:block; }
+.popover-actions { display:flex; gap:8px; margin-top:10px; }
+.popover button { border:0; background:var(--red); color:white; padding:6px 9px; font-size:.78rem; cursor:pointer; }
+@media (max-width:860px) { .guide,.illustrated-summary { grid-template-columns:1fr; } .habit-card,.habit-card:first-child { grid-column:span 12; } .practice-list { grid-template-columns:1fr; } .glossary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:560px) { .page { width:min(100% - 20px,1160px); padding-top:12px; } .topline { font-size:.64rem; gap:8px; } .topline span:last-child { text-align:right; } .hero { padding:26px 20px; } h1 { font-size:2.35rem; } .article-card,.article-two { padding:22px 17px; } .habit-card { grid-template-columns:40px 1fr; padding:17px; gap:11px; } .habit-number { width:34px; height:34px; } .controls strong { width:100%; } .glossary-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="page" id="top">
+  <div class="topline"><span><strong>Health reading</strong> · interactive vocabulary</span><span>B1–B2 · English–Russian support</span></div>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Article 1 · Original text from the supplied page</div>
+      <h1>5 things orthopedic surgeons do to stay strong as they age</h1>
+      <p class="hero-text">Click a highlighted expression to see its Russian translation and listen to the phrase. Use the glossary after reading to revise the target collocations.</p>
+      <div class="hero-tags"><span class="tag">Original article text</span><span class="tag">Interactive collocations</span><span class="tag">Mobile-friendly layout</span></div>
+    </div>
+  </header>
+
+  <section class="guide" aria-label="How to use this page">
+    <article class="guide-card"><b>1. Read actively</b><p>Open the meaning of any highlighted expression while you read.</p></article>
+    <article class="guide-card"><b>2. Listen and repeat</b><p>Use the audio buttons in the vocabulary pop-up to practise pronunciation.</p></article>
+    <article class="guide-card"><b>3. Revise in context</b><p>Meet the same expressions again in the second, original practice article.</p></article>
+  </section>
+
+  <article class="article-card" id="article-one">
+    <div class="article-meta"><span>Health</span><span>By Angela Haupt</span><span>Original text supplied by the user</span></div>
+    <div class="intro">
+<p>Every day, Dr. David Shau holds a <button class="phrase" type="button" data-en="plank position" data-ru="положение «планка»" aria-label="Show translation for plank position">plank position</button> on his living-room floor, and his toddler sits on his back, giggling. This is <button class="phrase" type="button" data-en="core training" data-ru="тренировка мышц кора" aria-label="Show translation for core training">core training</button>, orthopedic-surgeon style, and it is one of the milder things that Shau, who specializes in hip and knee replacements, does to keep his own body in <button class="phrase" type="button" data-en="working order" data-ru="в рабочем, исправном состоянии" aria-label="Show translation for working order">working order</button>.</p>
+<p>Ask an orthopedic surgeon, doctors who specialize in the <button class="phrase" type="button" data-en="musculoskeletal system" data-ru="опорно-двигательная система" aria-label="Show translation for musculoskeletal system">musculoskeletal system</button>, including bones, joints, ligaments, and muscles, what they do to stay healthy, and the answers <button class="phrase" type="button" data-en="get strange fast" data-ru="очень быстро становятся необычными" aria-label="Show translation for get strange fast">get strange fast</button>. They do <button class="phrase" type="button" data-en="toe yoga" data-ru="упражнения для пальцев ног" aria-label="Show translation for toe yoga">toe yoga</button> at their desks. They hop around like pogo sticks at the bus stop. They brush their teeth in a lunge, stretching the <button class="phrase" type="button" data-en="Achilles tendon" data-ru="ахиллово сухожилие" aria-label="Show translation for Achilles tendon">Achilles tendon</button> they know is often the first thing to go. They lower their bodies from a standing position to a <button class="phrase" type="button" data-en="cross-legged seat" data-ru="положение сидя со скрещёнными ногами" aria-label="Show translation for cross-legged seat">cross-legged seat</button> on the floor, then try to stand back up without using their hands or losing their balance. People who can do this, it has been shown, have <button class="phrase" type="button" data-en="one-fifth the risk" data-ru="в пять раз меньший риск" aria-label="Show translation for one-fifth the risk">one-fifth the risk</button> of dying in a given time frame as people who cannot.</p>
+<p>These are not quirks: they are the <button class="phrase" type="button" data-en="by-product of" data-ru="побочный результат" aria-label="Show translation for by-product of">by-product of</button> a job spent watching what happens when people stop maintaining their bodies. The surgeons who rebuild knees, replace hips, and fuse spines for a living often develop a set of <button class="phrase" type="button" data-en="personal habits" data-ru="личные привычки" aria-label="Show translation for personal habits">personal habits</button> that do not look much like the <button class="phrase" type="button" data-en="wellness advice" data-ru="советы по здоровому образу жизни" aria-label="Show translation for wellness advice">wellness advice</button> the rest of us hear. Some are surprisingly tiny, some are unusual, and all of them are doable.</p>
+<p>Here is what orthopedic surgeons do to stay strong, mobile, and upright as they age.</p>
+</div>
+    <div class="habits-grid"><section class="habit-card">
+      <div class="habit-number">01</div>
+      <div class="habit-content"><h3>They prioritize legs over almost everything else</h3>
+    <p>“The single biggest <button class="phrase" type="button" data-en="driver of losing your independence" data-ru="фактор, ведущий к утрате самостоятельности" aria-label="Show translation for driver of losing your independence">driver of losing your independence</button> as you age, it is not your heart or even your memory,” says Dr. Cory Calentine, an orthopedic surgeon in Brentwood, Tennessee. “It is your legs.” Once you cannot stand from a chair without using your hands, or catch yourself when you stumble, <button class="phrase" type="button" data-en="the cascade starts" data-ru="начинается цепная реакция" aria-label="Show translation for the cascade starts">the cascade starts</button>.</p>
+    <p>That is why every Sunday is <button class="phrase" type="button" data-en="leg day" data-ru="день тренировки ног" aria-label="Show translation for leg day">leg day</button> at the gym, where he uses weight machines to work one leg at a time. It lets him keep the weights heavy while <button class="phrase" type="button" data-en="protecting his spine" data-ru="защищая позвоночник" aria-label="Show translation for protecting his spine">protecting his spine</button>. “I train legs like my life depends on it,” says Calentine. “And statistically, it does.”</p></div>
+    </section><section class="habit-card">
+      <div class="habit-number">02</div>
+      <div class="habit-content"><h3>They train at their desks</h3>
+    <p>Dr. Vonda Wright, an orthopedic surgeon in Orlando, trains her balance and foot speed daily to help <button class="phrase" type="button" data-en="protect against falls" data-ru="защищать от падений" aria-label="Show translation for protect against falls">protect against falls</button>, which become riskier with age. It takes just a few seconds. When sitting at her desk, she does <button class="phrase" type="button" data-en="quick alternation" data-ru="быстрое чередование движений" aria-label="Show translation for quick alternation">quick alternation</button>, where she taps her toes as fast as she can. At bus stops, she <button class="phrase" type="button" data-en="hops in place" data-ru="прыгает на месте" aria-label="Show translation for hops in place">hops in place</button> doing pogos. “You might <button class="phrase" type="button" data-en="get some looks" data-ru="привлечь любопытные взгляды" aria-label="Show translation for get some looks">get some looks</button>,” she says, “but your health is worth it.”</p></div>
+    </section><section class="habit-card">
+      <div class="habit-number">03</div>
+      <div class="habit-content"><h3>They check the soles of their shoes regularly</h3>
+    <p>Flip your shoes over and look at the tread. If you cannot see the pattern anymore, it is time to replace them, says Dr. Heather Menzer, an orthopedic surgeon at Phoenix Children’s Hospital. <button class="phrase" type="button" data-en="Worn shoes" data-ru="изношенная обувь" aria-label="Show translation for Worn shoes">Worn shoes</button> are a <button class="phrase" type="button" data-en="sneaky culprit" data-ru="скрытая причина" aria-label="Show translation for sneaky culprit">sneaky culprit</button> behind foot pain and beyond. Knee, hip, and back pain can all <button class="phrase" type="button" data-en="trace back to" data-ru="быть связанными с / восходить к" aria-label="Show translation for trace back to">trace back to</button> shoes that have lost their support, she says.</p></div>
+    </section><section class="habit-card">
+      <div class="habit-number">04</div>
+      <div class="habit-content"><h3>They strengthen their core with body-weight exercises</h3>
+    <p>Shau is unequivocal about the importance of <button class="phrase" type="button" data-en="core strength" data-ru="сила мышц кора" aria-label="Show translation for core strength">core strength</button>. “Taking care of your core can really <button class="phrase" type="button" data-en="offset pain" data-ru="уменьшать или компенсировать боль" aria-label="Show translation for offset pain">offset pain</button> in different parts of your body,” he says. Most lower-back issues <button class="phrase" type="button" data-en="stem from" data-ru="происходят из-за" aria-label="Show translation for stem from">stem from</button> weak abdominal and pelvic muscles.</p>
+    <p>That is why his <button class="phrase" type="button" data-en="daily routine centers on" data-ru="ежедневная рутина строится вокруг" aria-label="Show translation for daily routine centers on">daily routine centers on</button> holding a plank for as long as he can with his daughter sitting on his back. Another option is sitting at a 90-degree angle with your back against a wall for as long as you can hold it. Both moves are <button class="phrase" type="button" data-en="body-weight exercises" data-ru="упражнения с весом собственного тела" aria-label="Show translation for body-weight exercises">body-weight exercises</button> that require no equipment and <button class="phrase" type="button" data-en="minimal space" data-ru="минимум места" aria-label="Show translation for minimal space">minimal space</button>.</p></div>
+    </section><section class="habit-card">
+      <div class="habit-number">05</div>
+      <div class="habit-content"><h3>They take rest as seriously as training</h3>
+    <p><button class="phrase" type="button" data-en="Recovery is not the absence of training" data-ru="восстановление — не отсутствие тренировок" aria-label="Show translation for Recovery is not the absence of training">Recovery is not the absence of training</button>; it is part of it, Menzer says. “<button class="phrase" type="button" data-en="Tissue repair" data-ru="восстановление тканей" aria-label="Show translation for Tissue repair">Tissue repair</button> happens when you rest, not when you train.” The actual rebuilding that exercise initiates happens during sleep and <button class="phrase" type="button" data-en="downtime" data-ru="время отдыха" aria-label="Show translation for downtime">downtime</button>, which means an <button class="phrase" type="button" data-en="under-recovered body" data-ru="организм, не успевший восстановиться" aria-label="Show translation for under-recovered body">under-recovered body</button> never gets the benefit of the work it is putting in.</p></div>
+    </section></div>
+
+    <div class="controls" aria-label="Vocabulary controls">
+      <strong>Vocabulary support</strong>
+      <button class="action primary" id="showTranslations" type="button">Show Russian translations</button>
+      <button class="action" id="hideTranslations" type="button">Hide translations</button>
+      <button class="action" id="openGlossary" type="button">Open glossary</button>
+    </div>
+    <section class="glossary" id="glossary" aria-label="Collocations glossary">
+      <h3>Collocations glossary</h3>
+      <p>Click a phrase to open its translation and hear it aloud.</p>
+      <div class="glossary-grid"><button class="glossary-item" type="button" data-en="plank position" data-ru="положение «планка»">
+  <span class="glossary-en">plank position</span><span class="glossary-ru">положение «планка»</span>
+</button><button class="glossary-item" type="button" data-en="core training" data-ru="тренировка мышц кора">
+  <span class="glossary-en">core training</span><span class="glossary-ru">тренировка мышц кора</span>
+</button><button class="glossary-item" type="button" data-en="working order" data-ru="в рабочем, исправном состоянии">
+  <span class="glossary-en">working order</span><span class="glossary-ru">в рабочем, исправном состоянии</span>
+</button><button class="glossary-item" type="button" data-en="musculoskeletal system" data-ru="опорно-двигательная система">
+  <span class="glossary-en">musculoskeletal system</span><span class="glossary-ru">опорно-двигательная система</span>
+</button><button class="glossary-item" type="button" data-en="get strange fast" data-ru="очень быстро становятся необычными">
+  <span class="glossary-en">get strange fast</span><span class="glossary-ru">очень быстро становятся необычными</span>
+</button><button class="glossary-item" type="button" data-en="toe yoga" data-ru="упражнения для пальцев ног">
+  <span class="glossary-en">toe yoga</span><span class="glossary-ru">упражнения для пальцев ног</span>
+</button><button class="glossary-item" type="button" data-en="Achilles tendon" data-ru="ахиллово сухожилие">
+  <span class="glossary-en">Achilles tendon</span><span class="glossary-ru">ахиллово сухожилие</span>
+</button><button class="glossary-item" type="button" data-en="cross-legged seat" data-ru="положение сидя со скрещёнными ногами">
+  <span class="glossary-en">cross-legged seat</span><span class="glossary-ru">положение сидя со скрещёнными ногами</span>
+</button><button class="glossary-item" type="button" data-en="one-fifth the risk" data-ru="в пять раз меньший риск">
+  <span class="glossary-en">one-fifth the risk</span><span class="glossary-ru">в пять раз меньший риск</span>
+</button><button class="glossary-item" type="button" data-en="by-product of" data-ru="побочный результат">
+  <span class="glossary-en">by-product of</span><span class="glossary-ru">побочный результат</span>
+</button><button class="glossary-item" type="button" data-en="personal habits" data-ru="личные привычки">
+  <span class="glossary-en">personal habits</span><span class="glossary-ru">личные привычки</span>
+</button><button class="glossary-item" type="button" data-en="wellness advice" data-ru="советы по здоровому образу жизни">
+  <span class="glossary-en">wellness advice</span><span class="glossary-ru">советы по здоровому образу жизни</span>
+</button><button class="glossary-item" type="button" data-en="driver of losing your independence" data-ru="фактор, ведущий к утрате самостоятельности">
+  <span class="glossary-en">driver of losing your independence</span><span class="glossary-ru">фактор, ведущий к утрате самостоятельности</span>
+</button><button class="glossary-item" type="button" data-en="the cascade starts" data-ru="начинается цепная реакция">
+  <span class="glossary-en">the cascade starts</span><span class="glossary-ru">начинается цепная реакция</span>
+</button><button class="glossary-item" type="button" data-en="leg day" data-ru="день тренировки ног">
+  <span class="glossary-en">leg day</span><span class="glossary-ru">день тренировки ног</span>
+</button><button class="glossary-item" type="button" data-en="protecting his spine" data-ru="защищая позвоночник">
+  <span class="glossary-en">protecting his spine</span><span class="glossary-ru">защищая позвоночник</span>
+</button><button class="glossary-item" type="button" data-en="protect against falls" data-ru="защищать от падений">
+  <span class="glossary-en">protect against falls</span><span class="glossary-ru">защищать от падений</span>
+</button><button class="glossary-item" type="button" data-en="quick alternation" data-ru="быстрое чередование движений">
+  <span class="glossary-en">quick alternation</span><span class="glossary-ru">быстрое чередование движений</span>
+</button><button class="glossary-item" type="button" data-en="hops in place" data-ru="прыжки на месте">
+  <span class="glossary-en">hops in place</span><span class="glossary-ru">прыжки на месте</span>
+</button><button class="glossary-item" type="button" data-en="get some looks" data-ru="привлечь любопытные взгляды">
+  <span class="glossary-en">get some looks</span><span class="glossary-ru">привлечь любопытные взгляды</span>
+</button><button class="glossary-item" type="button" data-en="Worn shoes" data-ru="изношенная обувь">
+  <span class="glossary-en">Worn shoes</span><span class="glossary-ru">изношенная обувь</span>
+</button><button class="glossary-item" type="button" data-en="sneaky culprit" data-ru="скрытая причина">
+  <span class="glossary-en">sneaky culprit</span><span class="glossary-ru">скрытая причина</span>
+</button><button class="glossary-item" type="button" data-en="trace back to" data-ru="быть связанными с / восходить к">
+  <span class="glossary-en">trace back to</span><span class="glossary-ru">быть связанными с / восходить к</span>
+</button><button class="glossary-item" type="button" data-en="core strength" data-ru="сила мышц кора">
+  <span class="glossary-en">core strength</span><span class="glossary-ru">сила мышц кора</span>
+</button><button class="glossary-item" type="button" data-en="offset pain" data-ru="уменьшать или компенсировать боль">
+  <span class="glossary-en">offset pain</span><span class="glossary-ru">уменьшать или компенсировать боль</span>
+</button><button class="glossary-item" type="button" data-en="stem from" data-ru="происходят из-за">
+  <span class="glossary-en">stem from</span><span class="glossary-ru">происходят из-за</span>
+</button><button class="glossary-item" type="button" data-en="daily routine centers on" data-ru="ежедневная рутина строится вокруг">
+  <span class="glossary-en">daily routine centers on</span><span class="glossary-ru">ежедневная рутина строится вокруг</span>
+</button><button class="glossary-item" type="button" data-en="body-weight exercises" data-ru="упражнения с весом собственного тела">
+  <span class="glossary-en">body-weight exercises</span><span class="glossary-ru">упражнения с весом собственного тела</span>
+</button><button class="glossary-item" type="button" data-en="minimal space" data-ru="минимум места">
+  <span class="glossary-en">minimal space</span><span class="glossary-ru">минимум места</span>
+</button><button class="glossary-item" type="button" data-en="Recovery is not the absence of training" data-ru="восстановление — не отсутствие тренировок">
+  <span class="glossary-en">Recovery is not the absence of training</span><span class="glossary-ru">восстановление — не отсутствие тренировок</span>
+</button><button class="glossary-item" type="button" data-en="Tissue repair" data-ru="восстановление тканей">
+  <span class="glossary-en">Tissue repair</span><span class="glossary-ru">восстановление тканей</span>
+</button><button class="glossary-item" type="button" data-en="downtime" data-ru="время отдыха">
+  <span class="glossary-en">downtime</span><span class="glossary-ru">время отдыха</span>
+</button><button class="glossary-item" type="button" data-en="under-recovered body" data-ru="организм, не успевший восстановиться">
+  <span class="glossary-en">under-recovered body</span><span class="glossary-ru">организм, не успевший восстановиться</span>
+</button><button class="glossary-item" type="button" data-en="Core strength" data-ru="сила мышц кора">
+  <span class="glossary-en">Core strength</span><span class="glossary-ru">сила мышц кора</span>
+</button><button class="glossary-item" type="button" data-en="Body-weight exercises" data-ru="упражнения с весом собственного тела">
+  <span class="glossary-en">Body-weight exercises</span><span class="glossary-ru">упражнения с весом собственного тела</span>
+</button></div>
+    </section>
+  </article>
+
+  <article class="article-two" id="article-two">
+    <div class="eyebrow">Article 2 · Original classroom rewrite</div>
+    <h2>Move well for longer: strength, balance, footwear, and recovery</h2>
+    <div class="source-note"><strong>About this article:</strong> This is an original educational article written for this lesson. It is based on current public guidance from the U.S. National Institute on Aging and the U.S. Centers for Disease Control and Prevention. It deliberately reuses the highlighted collocations from Article 1 in new contexts.</div>
+
+    <div class="practice-list"><section class="practice-block">
+      <div class="practice-visual" aria-hidden="true"><span>1</span></div>
+      <div><h3>Build a lower-body foundation</h3>
+    <p>For many adults, the most important <button class="phrase" type="button" data-en="driver of losing your independence" data-ru="фактор, ведущий к утрате самостоятельности" aria-label="Show translation for driver of losing your independence">driver of losing your independence</button> is not one dramatic accident but a gradual loss of leg strength and balance. When standing up from a chair, climbing stairs, or carrying shopping becomes difficult, <button class="phrase" type="button" data-en="the cascade starts" data-ru="начинается цепная реакция" aria-label="Show translation for the cascade starts">the cascade starts</button>: people move less, muscles weaken further, and confidence drops.</p>
+    <p>A regular <button class="phrase" type="button" data-en="leg day" data-ru="день тренировки ног" aria-label="Show translation for leg day">leg day</button> can help at any age. It does not have to involve very heavy weights. Sit-to-stands, controlled step-ups, squats to a chair, and walking uphill can all challenge the lower body while <button class="phrase" type="button" data-en="protecting his spine" data-ru="защищая позвоночник" aria-label="Show translation for protecting his spine">protecting his spine</button> through careful technique and an appropriate load.</p></div>
+    </section><section class="practice-block">
+      <div class="practice-visual" aria-hidden="true"><span>2</span></div>
+      <div><h3>Practise balance in brief sessions</h3>
+    <p>Balance exercises can help <button class="phrase" type="button" data-en="protect against falls" data-ru="защищать от падений" aria-label="Show translation for protect against falls">protect against falls</button>, particularly when they are practised regularly. A short <button class="phrase" type="button" data-en="quick alternation" data-ru="быстрое чередование движений" aria-label="Show translation for quick alternation">quick alternation</button> at a desk, where you tap one foot and then the other, is one simple example. Standing on one leg near a stable surface, walking heel-to-toe, or doing a few controlled <button class="phrase" type="button" data-en="hops in place" data-ru="прыжки на месте" aria-label="Show translation for hops in place">hops in place</button> may also be useful for people whose joints tolerate them.</p>
+    <p>These movements can feel unusual, and you may <button class="phrase" type="button" data-en="get some looks" data-ru="привлечь любопытные взгляды" aria-label="Show translation for get some looks">get some looks</button> in public. Still, small habits such as <button class="phrase" type="button" data-en="toe yoga" data-ru="упражнения для пальцев ног" aria-label="Show translation for toe yoga">toe yoga</button> can improve awareness of the feet and ankles. The <button class="phrase" type="button" data-en="Achilles tendon" data-ru="ахиллово сухожилие" aria-label="Show translation for Achilles tendon">Achilles tendon</button> and calf muscles contribute to walking, climbing, and recovering your balance after a stumble.</p></div>
+    </section><section class="practice-block">
+      <div class="practice-visual" aria-hidden="true"><span>3</span></div>
+      <div><h3>Treat footwear as part of movement</h3>
+    <p><button class="phrase" type="button" data-en="Worn shoes" data-ru="изношенная обувь" aria-label="Show translation for Worn shoes">Worn shoes</button> with a smooth tread or poor support can be a <button class="phrase" type="button" data-en="sneaky culprit" data-ru="скрытая причина" aria-label="Show translation for sneaky culprit">sneaky culprit</button> behind discomfort. Foot, knee, hip, and back pain can sometimes <button class="phrase" type="button" data-en="trace back to" data-ru="быть связанными с / восходить к" aria-label="Show translation for trace back to">trace back to</button> footwear, training volume, or a rapid change in activity. The <button class="phrase" type="button" data-en="musculoskeletal system" data-ru="опорно-двигательная система" aria-label="Show translation for musculoskeletal system">musculoskeletal system</button> works as a chain, so a problem in one area can affect another.</p>
+    <p>Persistent pain should be assessed by a qualified healthcare professional, especially when it affects walking, sleep, daily tasks, or balance.</p></div>
+    </section><section class="practice-block">
+      <div class="practice-visual" aria-hidden="true"><span>4</span></div>
+      <div><h3>Use the core to support everyday tasks</h3>
+    <p><button class="phrase" type="button" data-en="Core strength" data-ru="сила мышц кора" aria-label="Show translation for Core strength">Core strength</button> is not only about visible abdominal muscles. It means controlling the trunk while you bend, turn, carry objects, or maintain balance. For some people, a <button class="phrase" type="button" data-en="plank position" data-ru="положение «планка»" aria-label="Show translation for plank position">plank position</button>, a wall sit, or a bridge can help <button class="phrase" type="button" data-en="offset pain" data-ru="уменьшать или компенсировать боль" aria-label="Show translation for offset pain">offset pain</button> by increasing stability.</p>
+    <p>Many minor lower-back problems <button class="phrase" type="button" data-en="stem from" data-ru="происходят из-за" aria-label="Show translation for stem from">stem from</button> a mix of weak muscles, long periods of sitting, and rushed movement. A useful <button class="phrase" type="button" data-en="daily routine centers on" data-ru="ежедневная рутина строится вокруг" aria-label="Show translation for daily routine centers on">daily routine centers on</button> short actions that are easy to repeat. <button class="phrase" type="button" data-en="Body-weight exercises" data-ru="упражнения с весом собственного тела" aria-label="Show translation for Body-weight exercises">Body-weight exercises</button> require <button class="phrase" type="button" data-en="minimal space" data-ru="минимум места" aria-label="Show translation for minimal space">minimal space</button>, which makes them practical at home.</p></div>
+    </section><section class="practice-block">
+      <div class="practice-visual" aria-hidden="true"><span>5</span></div>
+      <div><h3>Plan recovery as carefully as exercise</h3>
+    <p><button class="phrase" type="button" data-en="Recovery is not the absence of training" data-ru="восстановление — не отсутствие тренировок" aria-label="Show translation for Recovery is not the absence of training">Recovery is not the absence of training</button>; it is one of the conditions that allow training to be productive. <button class="phrase" type="button" data-en="Tissue repair" data-ru="восстановление тканей" aria-label="Show translation for Tissue repair">Tissue repair</button> and adaptation depend on sleep, nutrition, and enough <button class="phrase" type="button" data-en="downtime" data-ru="время отдыха" aria-label="Show translation for downtime">downtime</button>.</p>
+    <p>An <button class="phrase" type="button" data-en="under-recovered body" data-ru="организм, не успевший восстановиться" aria-label="Show translation for under-recovered body">under-recovered body</button> may feel unusually tired, sore, or uncoordinated. Gradual progress and rest are usually more sustainable than a routine that repeatedly causes exhaustion or pain.</p></div>
+    </section><section class="practice-block">
+      <div class="practice-visual" aria-hidden="true"><span>6</span></div>
+      <div><h3>Build habits instead of looking for shortcuts</h3>
+    <p>The aim is to keep the body in <button class="phrase" type="button" data-en="working order" data-ru="в рабочем, исправном состоянии" aria-label="Show translation for working order">working order</button>, rather than to copy an athlete’s training programme. A controlled <button class="phrase" type="button" data-en="cross-legged seat" data-ru="положение сидя со скрещёнными ногами" aria-label="Show translation for cross-legged seat">cross-legged seat</button>, a slow rise from a chair, and regular walking are examples of ordinary movements that can reveal strengths and limitations.</p>
+    <p>Useful <button class="phrase" type="button" data-en="wellness advice" data-ru="советы по здоровому образу жизни" aria-label="Show translation for wellness advice">wellness advice</button> should lead to realistic <button class="phrase" type="button" data-en="personal habits" data-ru="личные привычки" aria-label="Show translation for personal habits">personal habits</button>. Physical capability is usually the <button class="phrase" type="button" data-en="by-product of" data-ru="побочный результат" aria-label="Show translation for by-product of">by-product of</button> consistent activity, sensible progression, and attention to recovery. It is better to develop a routine you can maintain than to rely on a dramatic claim about <button class="phrase" type="button" data-en="one-fifth the risk" data-ru="в пять раз меньший риск" aria-label="Show translation for one-fifth the risk">one-fifth the risk</button> of a future problem.</p></div>
+    </section></div>
+
+    <section class="illustrated-summary" aria-label="Visual summary">
+      <article class="summary-card"><div class="summary-icon" aria-hidden="true">🦵</div><h3>Strength</h3><p>Develop practical lower-body and core strength through controlled, repeatable movement.</p></article>
+      <article class="summary-card"><div class="summary-icon" aria-hidden="true">⚖️</div><h3>Balance</h3><p>Practise balance regularly and adapt exercises to your current ability and safety needs.</p></article>
+      <article class="summary-card"><div class="summary-icon" aria-hidden="true">🌙</div><h3>Recovery</h3><p>Allow enough sleep and rest for adaptation after physical activity and strength work.</p></article>
+    </section>
+
+    <section class="sources">
+      <h3>Sources used for Article 2</h3>
+      <ul>
+        <li><a href="https://www.nia.nih.gov/health/exercise-and-physical-activity/three-types-exercise-can-improve-your-health-and-physical" target="_blank" rel="noopener">National Institute on Aging: Three Types of Exercise Can Improve Your Health and Physical Ability</a></li>
+        <li><a href="https://www.cdc.gov/physical-activity-basics/guidelines/older-adults.html" target="_blank" rel="noopener">CDC: Older Adult Activity: An Overview</a></li>
+        <li><a href="https://www.cdc.gov/physical-activity-basics/benefits/index.html" target="_blank" rel="noopener">CDC: Benefits of Physical Activity</a></li>
+      </ul>
+      <p class="medical-note">This page is designed for language learning. It does not replace medical advice, diagnosis, or personalised exercise guidance from a qualified healthcare professional.</p>
+    </section>
+  </article>
+
+  <footer>Interactive health reading · English–Russian collocations · <a href="#top">Back to top</a></footer>
+</div>
+
+<div class="popover" id="popover" role="dialog" aria-live="polite">
+  <span class="popover-title" id="popEn"></span>
+  <span class="popover-ru" id="popRu"></span>
+  <div class="popover-actions">
+    <button type="button" id="speakEn">Hear English</button>
+    <button type="button" id="speakRu">Hear Russian</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const popover = document.getElementById('popover');
+  const popEn = document.getElementById('popEn');
+  const popRu = document.getElementById('popRu');
+  let activeEn = '';
+  let activeRu = '';
+
+  function speak(text, lang) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    utterance.rate = lang === 'ru-RU' ? 0.9 : 0.86;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function showPopover(target) {
+    activeEn = target.dataset.en || '';
+    activeRu = target.dataset.ru || '';
+    if (!activeEn) return;
+    popEn.textContent = activeEn;
+    popRu.textContent = activeRu;
+    popover.classList.add('open');
+    const rect = target.getBoundingClientRect();
+    const width = Math.min(310, window.innerWidth - 24);
+    let left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12));
+    let top = rect.bottom + 10;
+    if (top + 150 > window.innerHeight) top = Math.max(12, rect.top - 145);
+    popover.style.left = left + 'px';
+    popover.style.top = top + 'px';
+  }
+
+  document.querySelectorAll('.phrase, .glossary-item').forEach(item => {
+    item.addEventListener('click', (event) => { event.stopPropagation(); showPopover(item); });
+    item.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); showPopover(item); } });
+  });
+
+  document.getElementById('speakEn').addEventListener('click', () => speak(activeEn, 'en-GB'));
+  document.getElementById('speakRu').addEventListener('click', () => speak(activeRu, 'ru-RU'));
+  document.addEventListener('click', (event) => { if (!popover.contains(event.target) && !event.target.closest('.phrase, .glossary-item')) popover.classList.remove('open'); });
+  window.addEventListener('resize', () => popover.classList.remove('open'));
+  window.addEventListener('scroll', () => popover.classList.remove('open'), { passive:true });
+
+  document.getElementById('showTranslations').addEventListener('click', () => {
+    document.body.classList.add('show-translations');
+    document.querySelectorAll('.phrase').forEach(el => {
+      if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('translation-inline')) {
+        const tr = document.createElement('span');
+        tr.className = 'translation-inline';
+        tr.textContent = el.dataset.ru;
+        el.insertAdjacentElement('afterend', tr);
+      }
+    });
+  });
+  document.getElementById('hideTranslations').addEventListener('click', () => document.body.classList.remove('show-translations'));
+  document.getElementById('openGlossary').addEventListener('click', () => {
+    const g = document.getElementById('glossary');
+    g.classList.toggle('open');
+    if (g.classList.contains('open')) g.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  });
+})();
+</script>
+</body>
+</html>
